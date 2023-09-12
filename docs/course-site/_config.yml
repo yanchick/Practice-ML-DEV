@@ -1,0 +1,52 @@
+# Site settings
+course_name: History of Magic
+course_description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare aliquam mattis. Donec hendrerit sollicitudin urna. Aliquam venenatis rutrum velit, at lobortis dui cursus a. Nam varius metus in turpis maximus, ut rhoncus tellus dictum. In aliquam tortor nec mi dapibus, sit amet vehicula dolor auctor."
+course_semester: "Fall 1998"
+
+baseurl: "/jekyll-course-website-template" # the subpath of your site, e.g. /blog/
+url: "http://kazemnejad.github.io/" # the base hostname & protocol for your site
+
+schoolname: "Hogwarts"
+schoolurl: "https://hogwarts.edu"
+twitter_username: username 
+
+address: |
+    School of Witchcraft and Wizardry
+    Hogwarts
+    Scotland
+
+# Set your Google Analytics tracking ID (set up yours at http://www.google.com/analytics/)
+# google_analytics: UA-XXXXXXXX-X
+
+### Do not change the followings unless you know what you are doing ###
+
+# Build settings
+markdown: kramdown
+
+# Other options
+permalink: blog/:year/:month/:title
+excerpt_separator: "<!--more-->"
+
+include: ['_images', '_css']
+exclude: ['develop']
+
+dateformat: "%m/%d/%Y"
+
+future: true
+collections:
+    events:
+        output: true
+    lectures:
+        output: true
+    assignments:
+        output: true
+    announcements:
+        output: false
+
+
+defaults:
+  - scope:
+      path: ""
+      type: "assignments"
+    values:
+      layout: "assignment"
