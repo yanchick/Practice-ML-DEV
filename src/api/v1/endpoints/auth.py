@@ -1,11 +1,11 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
-from app.core.container import Container
-from app.core.dependencies import get_current_active_user
-from app.schema.auth_schema import SignIn, SignInResponse, SignUp
-from app.schema.user_schema import User
-from app.services.auth_service import AuthService
+from  core.container import Container
+from  core.dependencies import get_current_active_user
+from  schema.auth_schema import SignIn, SignInResponse, SignUp
+from  schema.user_schema import User
+from  services.auth_service import AuthService
 
 router = APIRouter(
     prefix="/auth",

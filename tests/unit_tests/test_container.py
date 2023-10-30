@@ -1,4 +1,4 @@
-from app.core.exceptions import NotFoundError
+from  core.exceptions import NotFoundError
 
 
 # It must raise an error

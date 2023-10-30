@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.v1.routes import routers as v1_routers
-from app.api.v2.routes import routers as v2_routers
-from app.core.config import configs
-from app.core.container import Container
-from app.util.class_object import singleton
+from api.v1.routes import routers as v1_routers
+from core.config import configs
+from core.container import Container
+from util.class_object import singleton
 
 
 @singleton
@@ -21,7 +20,7 @@ class AppCreator:
         # set db and container
         self.container = Container()
         self.db = self.container.db()
-        # self.db.create_database()
+        self.db.create_database()
 
         # set cors
         if configs.BACKEND_CORS_ORIGINS:
@@ -39,7 +38,6 @@ class AppCreator:
             return "service is working"
 
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
-        self.app.include_router(v2_routers, prefix=configs.API_V2_STR)
 
 
 app_creator = AppCreator()

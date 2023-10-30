@@ -13,11 +13,11 @@ from fastapi.testclient import TestClient
 from loguru import logger
 from sqlmodel import SQLModel, create_engine
 
-from app.core.config import configs
-from app.core.container import Container
-from app.main import AppCreator
-from app.model.post import Post
-from app.model.user import User
+from  core.config import configs
+from  core.container import Container
+from  main import AppCreator
+from  model.post import Post
+from  model.user import User
 
 
 def insert_default_data(conn):

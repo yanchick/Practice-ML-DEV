@@ -1,6 +1,6 @@
 from sqlmodel import Field
 
-from app.model.base_model import BaseModel
+from  model.base_model import BaseModel
 
 
 class Predictor(BaseModel, table=false):

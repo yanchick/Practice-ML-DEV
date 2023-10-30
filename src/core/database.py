@@ -5,6 +5,8 @@ from sqlalchemy import create_engine, orm
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import Session
 
+from model.user import User
+
 
 @as_declarative()
 class BaseModel:
@@ -29,7 +31,7 @@ class Database:
         )
 
     def create_database(self) -> None:
-        BaseModel.metadata.create_all(self._engine)
+        User.metadata.create_all(self._engine)
 
     @contextmanager
     def session(self) -> Callable[..., AbstractContextManager[Session]]:

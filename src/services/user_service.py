@@ -1,5 +1,5 @@
-from app.repository.user_repository import UserRepository
-from app.services.base_service import BaseService
+from  repository.user_repository import UserRepository
+from  services.base_service import BaseService
 
 
 class UserService(BaseService):
