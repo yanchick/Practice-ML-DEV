@@ -2,7 +2,6 @@ from sqlmodel import Field
 
 from app.model.base_model import BaseModel
 
-
 class User(BaseModel, table=True):
     email: str = Field(unique=True)
     password: str = Field()

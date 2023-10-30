@@ -14,17 +14,14 @@ class Configs(BaseSettings):
     ENV: str = os.getenv("ENV", "dev")
     API: str = "/api"
     API_V1_STR: str = "/api/v1"
-    API_V2_STR: str = "/api/v2"
     PROJECT_NAME: str = "fca-api"
     ENV_DATABASE_MAPPER: dict = {
         "prod": "fca",
-        "stage": "stage-fca",
         "dev": "dev-fca",
-        "test": "test-fca",
     }
     DB_ENGINE_MAPPER: dict = {
         "postgresql": "postgresql",
-        "mysql": "mysql+pymysql",
+        "sqlite": "sqlite3",
     }
 
     PROJECT_ROOT: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -74,9 +71,3 @@ class TestConfigs(Configs):
 
 configs = Configs()
 
-if ENV == "prod":
-    pass
-elif ENV == "stage":
-    pass
-elif ENV == "test":
-    setting = TestConfigs()
