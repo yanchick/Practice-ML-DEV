@@ -14,7 +14,7 @@ SOURCE_FORMAT="markdown_strict\
 +smart\
 +fenced_divs"
 
-DATA_DIR="pandoc"
+DATA_DIR="./tamplates/"#"pandoc"
 PDF_ENGINE="lualatex"
 
 case "$1" in
