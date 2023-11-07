@@ -3,16 +3,14 @@ title: "Практикум по разарботке ML"
 author: "Анисимов Я.О и ко"
 institute: "ИТМО"
 theme: "Frankfurt"
-fonttheme: "professionalfonts"
-fontsize: 9pt
-urlcolor: red
 colortheme: "beaver"
 urlcolor: red
 linkstyle: bold
 aspectratio: 169
 titlegraphic: img/aleph0.png
+logo: img/aleph0-small.png
 date:
-section-titles: true
+section-titles: false
 toc: true
 ---
 
@@ -34,12 +32,7 @@ toc: true
 
 ## Темы лекционного блока
 
-- Постановка задачи, общее сведения про API
-- FastAPI и чистая архитектура
-- Базы данных и sqlalhcemy
-- Воркеры для тяжелых задач
-- WebUI средствами Python
-- Инфраструктура
+- 
 
 ## Результат курса
 
@@ -369,6 +362,123 @@ JWT может содержать информацию о пользовател
 
 
 
+## Слайд 1
+
+### Что такое JWT?
+
+- JWT (JSON Web Token) - это формат токена, который используется для представления информации между двумя сторонами в компактном и безопасном способе.
+- JWT состоит из трех частей: заголовка, полезной нагрузки и подписи.
+- Заголовок содержит информацию о типе токена и используемом алгоритме шифрования.
+- Полезная нагрузка (payload) содержит данные, которые нужно передать.
+- Подпись используется для проверки подлинности токена.
+
+## Слайд 2
+
+### Пример создания JWT токена на Python
+
+1. Установите библиотеку PyJWT: `pip install PyJWT`
+2. Импортируйте библиотеку и укажите секретный ключ:
+
+```python
+import jwt
+
+secret_key = "my_secret_key"
+```
+
+## Слайд 3
+
+### Пример создания JWT токена на Python (продолжение)
+
+3. Создайте функцию для создания токена с полезной нагрузкой:
+
+```python
+def create_token(payload):
+    token = jwt.encode(payload, secret_key, algorithm="HS256")
+    return token
+```
+
+4. Пример использования функции:
+
+```python
+user_id = 123
+username = "john_doe"
+
+payload = {"user_id": user_id, "username": username}
+token = create_token(payload)
+print(token)
+```
+
+## Слайд 4
+
+### Пример создания JWT токена на Python (продолжение)
+
+5. Расшифровка токена:
+
+```python
+def decode_token(token):
+    decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
+    return decoded
+```
+
+6. Пример использования функции:
+
+```python
+decoded_token = decode_token(token)
+print(decoded_token)
+```
+
+- Результат:
+
+```python
+{
+    "user_id": 123,
+    "username": "john_doe"
+}
+```
+
+## Слайд 5
+
+### Важно!
+
+- Обязательно храните секретный ключ в безопасном месте, чтобы посторонние лица не могли его получить.
+- Проверяйте подпись токена для уверенности в его подлинности.
+- Токен может содержать любые данные, но не храните в нем конфиденциальную информацию без необходимости.
+
+## Конец
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Пример простого API для регистрации пользователя и работой с айтемом
 
@@ -392,6 +502,131 @@ JWT может содержать информацию о пользовател
 - **PUT /items/{itemId}** - обновление информации об айтеме
 - **DELETE /items/{itemId}** - удаление айтема по идентификатору
 
+## Слайд 3
+
+### Пример описания API на Swagger
+
+```yaml
+swagger: "2.0"
+info:
+  title: Пример API для регистрации пользователя и работы с айтемом
+  version: 1.0.0
+paths:
+  /users:
+    post:
+      summary: Создание нового пользователя
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: Пользователь успешно создан
+    get:
+      summary: Получение информации о всех пользователях
+      responses:
+        200:
+          description: Список всех пользователей
+  /users/{userId}:
+    get:
+      summary: Получение информации о пользователе по идентификатору
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Информация о пользователе
+    put:
+      summary: Обновление информации о пользователе
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: Успешное обновление информации о пользователе
+    delete:
+      summary: Удаление пользователя по идентификатору
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Пользователь успешно удален
+  /items/{itemId}:
+    get:
+      summary: Получение информации об айтеме по идентификатору
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Информация об айтеме
+    put:
+      summary: Обновление информации об айтеме
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          type: integer
+        - in: body
+          name: item
+          required: true
+          schema:
+            $ref: "#/definitions/Item"
+      responses:
+        200:
+          description: Успешное обновление информации об айтеме
+    delete:
+      summary: Удаление айтема по идентификатору
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Айтем успешно удален
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+    required:
+      - name
+      - email
+  Item:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+    required:
+      - name
+      - description
+```
 
 ## Слайд 4
 
