@@ -100,9 +100,14 @@ toc: true
 
 # Задача на курс
 
-## Ссылка на задание
+## Ссылки на задачи
 
-[Задание 1](/cases/case_1/case_1.md)
+- [Задание 1](/cases/case_1/case_1.md)
+- [Задание 2](/cases/case_2/case_2.md)
+- [Задание 3](/cases/case_3/case_3.md)
+- [Задание 4](/cases/case_4/case_4.md)
+- [Задание 5](/cases/case_5/case_5.md)
+- [Задание 6](/cases/case_6/case_6.md)
 
 # Основы дизайна API
 
