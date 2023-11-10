@@ -15,7 +15,7 @@ layout: default
     {{ content }}
 
     {% if site.data.previous_offering and site.data.previous_offering.offerings and site.data.previous_offering.offerings.size > 0 %}
-    <h2>Previous Offerings</h2>
+    <h2>Прошлые запуски</h2>
     <ul class="previous-offerings">
     {% for offer in site.data.previous_offering.offerings %}
     <li><a href="{{ offer.url }}">{{offer.title}}</a></li>
