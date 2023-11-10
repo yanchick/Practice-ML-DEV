@@ -13,13 +13,13 @@
 
 {% if all_events_sorted.size > 0 %}
 <div class="announcement-box" style="margin-top:30px">
-<h2>Updates</h2>
+<h2>Новости</h2>
 <ul>
     {% for n in all_events_sorted limit:7 %}
     <li class="no-p-margin">
         {% if n.type %}
             {% if n.type == 'lecture' %}
-                New Lecture is up: {{ n.title }}
+                Новая лекция: {{ n.title }}
                 {% include lecture_links.html lecture=n %}
             {% elsif n.type == 'assignment' %}
                 New Assignment released: [<a href="{{ n.url | prepend: site.baseurl }}">{{ n.title }}</a>]

@@ -75,3 +75,5 @@ async def delete_book(book_title: str):
             BOOKS.pop(i)
             break
 
+
+app.run()
