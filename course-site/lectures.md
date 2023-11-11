@@ -3,4 +3,5 @@ layout: lectures
 title: Lectures
 permalink: /lectures/
 ---
-You can download the lectures here. We will try to upload lectures prior to their corresponding classes.
+
+Все лекции находятся по адресу https://github.com/yanchick/Practice-ML-DEV/tree/master/slides.

@@ -12,5 +12,5 @@ items:
   icon_class: fas fa-user-graduate
 
 - url: /materials/
-  name: Материалы
+  name: Вспомогательные материалы
   icon_class: fas fa-book
