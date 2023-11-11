@@ -1,6 +1,7 @@
 # Site settings
 course_name: Практикум по разработке ML сервисво
 course_semester: "осень 2023"
+course_description: В рамках этого курса вы познакомитесь с основными этапами жизненного цикла ML-модели, начиная от сбора и подготовки данных, до развертывания и мониторинга ML-сервиса. Мы рассмотрим различные инструменты и технологии, которые помогут вам разрабатывать и внедрять ML-сервисы в реальных сценариях.
 
 baseurl: "/Practice-ML-DEV" # the subpath of your site, e.g. /blog/
 url: "http://yanchick.github.io/" # the base hostname & protocol for your site
