@@ -1,8 +1,0 @@
-\babel@toc {russian}{}\relax 
-\beamer@sectionintoc {1}{Общее сведения о курсе}{4}{0}{1}
-\beamer@sectionintoc {2}{Brief: Разработка ML-сервиса с подсистемой биллинга}{9}{0}{2}
-\beamer@sectionintoc {3}{Задача курс}{14}{0}{3}
-\beamer@sectionintoc {4}{Основы дизайна API}{16}{0}{4}
-\beamer@sectionintoc {5}{Паттерны проектирования stateful API}{23}{0}{5}
-\beamer@sectionintoc {6}{Примеры использования cookie и JWT для RESTful API по заказу айтемов}{26}{0}{6}
-\beamer@sectionintoc {7}{Пример простого API для регистрации пользователя и работой с айтемом}{34}{0}{7}
