@@ -142,6 +142,9 @@ SELECT id, name FROM Users;
 SELECT * FROM Users WHERE age > 30;
 ```
 
+
+## Объединения 
+
 ### JOIN
 
 - Запрос связанных данных из двух таблиц "Users" и "Orders"
@@ -160,6 +163,7 @@ FROM Orders
 GROUP BY user_id
 HAVING COUNT(*) > 2;
 ```
+
 
 ## Заключение
 
