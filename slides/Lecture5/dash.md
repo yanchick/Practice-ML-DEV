@@ -77,3 +77,160 @@ if __name__ == "__main__":
 - Спасибо за внимание и готовность ответить на вопросы
 
 ---
+
+# Использование dcc.Store в библиотеке Dash
+
+## Что такое dcc.Store?
+`dcc.Store` - это компонент в библиотеке Dash, который предоставляет возможность сохранять данные на стороне клиента (веб-браузера) и синхронизировать их между разными компонентами приложения. `dcc.Store` является ключевым компонентом для создания интерактивных и динамических приложений.
+
+## Добавление данных в dcc.Store
+Для добавления данных в `dcc.Store` необходимо выполнить следующие шаги:
+1. Определить `dcc.Store` компонент в разметке приложения, указав уникальное значение `id`:
+```python
+dcc.Store(id='my-store')
+```
+2. В коллбэке, связанном с другим компонентом, получить данные и сохранить их в `dff.Store`. Для этого используется атрибут `data` у объекта `StoredComponent`:
+```python
+@app.callback(
+    Output('my-store', 'data'),
+    [Input('other-component', 'value')]
+)
+def update_store(value):
+    # Получение данных и сохранение их в Store
+    data = fetch_data(value)
+    return data
+```
+В данном примере, при изменении значения в `other-component`, данные получаются с помощью функции `fetch_data(value)` и сохраняются в `my-store` с использованием метода `data`. 
+
+## Удаление данных из dcc.Store
+Удалить данные из `dcc.Store` можно двумя способами:
+1. Обновить значение `dcc.Store.data` на `None`:
+```python
+@app.callback(
+    Output('my-store', 'data'),
+    [Input('clear-button', 'n_clicks')]
+)
+def clear_store(n_clicks):
+    if n_clicks:
+        return None
+    else:
+        raise PreventUpdate
+```
+В данном примере, когда пользователь нажимает на кнопку `clear-button`, значение `data` в `my-store` обновляется на `None`, что приводит к удалению данных.
+
+2. Использовать метод `clear_data()` объекта `StoredComponent`:
+```python
+@app.callback(
+    Output('my-store', 'data'),
+    [Input('clear-button', 'n_clicks')]
+)
+def clear_store(n_clicks):
+    if n_clicks:
+        return dcc.Store(id='my-store').clear_data()
+    else:
+        raise PreventUpdate
+```
+В данном примере, при нажатии на кнопку `clear-button`, вызывается метод `clear_data()` для объекта `my-store`, что также приводит к удалению данных.
+
+## Заключение
+`dcc.Store` является важным компонентом в библиотеке Dash для хранения и синхронизации данных между компонентами приложения. При добавлении и удалении данных из `dcc.Store` необходимо использовать соответствующие коллбэки и методы для достижения требуемого функционала.
+
+
+# Dash: Input, Callback, Output, Store
+
+## Введение в Dash
+Dash - это фреймворк для создания интерактивных веб-приложений с использованием языков программирования Python, HTML, CSS и JavaScript. Он обеспечивает возможность создания красивых и функциональных пользовательских интерфейсов, используя данные и логику Python.
+
+## Input
+Input в Dash относится к компонентам, которые могут быть использованы как входные данные в вашем веб-приложении. Это может быть текстовое поле, выпадающий список, кнопка и т.д. Например, `dcc.Input` используется для создания текстового поля, в котором пользователь может вводить данные.
+
+``` python
+import dash
+import dash_core_components as dcc
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Input(id='my-input', type='text', value=''),
+])
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+```
+
+## Callback
+Callback в Dash позволяет связывать различные компоненты и определять действия, которые должны произойти при изменении значения определенного ввода или при выполнении определенных событий. Это позволяет создавать динамические приложения, которые могут реагировать на взаимодействие пользователя.
+
+``` python
+@app.callback(
+    Output('my-output', 'children'),
+    [Input('my-input', 'value')]
+)
+def update_output(value):
+    return f'Вы ввели: {value}'
+```
+
+## Output
+Output в Dash относится к компонентам, которые используются для отображения результатов или выходных данных вашего приложения. Output может быть текстовым полем, графиком, таблицей и т.д. Например, `html.Div` используется для отображения текста или других компонентов.
+
+``` python
+import dash_html_components as html
+
+app.layout = html.Div([
+    dcc.Input(id='my-input', type='text', value=''),
+    html.Div(id='my-output')
+])
+
+@app.callback(
+    Output('my-output', 'children'),
+    [Input('my-input', 'value')]
+)
+def update_output(value):
+    return f'Вы ввели: {value}'
+```
+
+## Store
+Store в Dash относится к компонентам, которые предоставляют механизм для сохранения и обновления данных на стороне сервера без необходимости взаимодействия с пользователем. Он обеспечивает возможность сохранения состояния или промежуточных результатов приложения.
+
+``` python
+import dash_html_components as html
+from dash.dependencies import Input, Output, State, ClientsideFunction
+
+app.layout = html.Div([
+    html.Button('Загрузить данные', id='load-button'),
+    html.Button('Сохранить данные', id='save-button'),
+    dcc.Store(id='data-store')
+])
+
+@app.callback(
+    Output('data-store', 'data'),
+    [Input('save-button', 'n_clicks')],
+    [State('my-input', 'value')]
+)
+def save_data(n_clicks, value):
+    # Сохранить данные в Store
+    return value
+
+@app.callback(
+    Output('my-input', 'value'),
+    [Input('load-button', 'n_clicks')],
+    [State('data-store', 'data')]
+)
+def load_data(n_clicks, data):
+    # Загрузить данные из Store
+    return data
+```
+
+## Использование и цели
+- Input, Callback, Output и Store являются основными компонентами веб-приложений Dash.
+- Input используется для получения данных от пользователя или других источников ввода.
+- Callback используется для определения действий, которые должны произойти при изменении значения входных данных.
+- Output используется для отображения результатов или выходных данных в вашем приложении.
+- Store используется для сохранения и обновления данных на сервере без необходимости взаимодействия с пользователем.
+- Вместе эти компоненты позволяют создавать интерактивные, динамические и адаптивные веб-приложения, которые могут реагировать на действия пользователей и обновляться по мере необходимости.
+
+
+
+
+
+
