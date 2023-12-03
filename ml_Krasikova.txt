@@ -1,0 +1,86 @@
+Кейс 6
+Красикова Татьяна
+
+# Импорт библиотек
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Загрузка данных
+data = pd.read_csv('TCGA_GBM_LGG_Mutations_all.csv')
+
+# Изучение основной информации
+print(data.head())
+print(data.info())
+print(data.describe())
+
+# Визуализация данных (countplot для категориальных переменных)
+plt.figure(figsize=(12, 6))
+sns.countplot(x='Primary_Diagnosis', hue='IDH1', data=data)
+plt.title('Countplot of Primary Diagnosis based on IDH1 mutation')
+plt.show()
+
+# Определение целевой переменной
+target_variable = 'Primary_Diagnosis'
+
+# Подготовка данных
+X = data.drop(columns=[target_variable])
+y = data[target_variable]
+
+# Кодирование категориальных переменных
+label_encoder = LabelEncoder()
+y = label_encoder.fit_transform(y)
+
+# Разделение данных на обучающий и тестовый наборы
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Применение One-Hot Encoding к категориальным переменным
+X_train_encoded = pd.get_dummies(X_train)
+X_test_encoded = pd.get_dummies(X_test)
+
+# Убеждаемся, что у тестового набора те же столбцы, что и у обучающего
+X_train_encoded, X_test_encoded = X_train_encoded.align(X_test_encoded, join='outer', axis=1, fill_value=0)
+
+# Масштабирование данных
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train_encoded)
+X_test_scaled = scaler.transform(X_test_encoded)
+
+# Модель 1: Support Vector Machine (SVM)
+svm_model = SVC(kernel='linear', random_state=42)
+svm_model.fit(X_train_scaled, y_train)
+y_pred_svm = svm_model.predict(X_test_scaled)
+
+# Оценка производительности SVM
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+print(f'SVM Model Accuracy: {accuracy_svm}')
+print(classification_report(y_test, y_pred_svm))
+print(confusion_matrix(y_test, y_pred_svm))
+
+# Модель 2: Random Forest
+rf_model = RandomForestClassifier(random_state=42)
+rf_model.fit(X_train_encoded, y_train)
+y_pred_rf = rf_model.predict(X_test_encoded)
+
+# Оценка производительности Random Forest
+accuracy_rf = accuracy_score(y_test, y_pred_rf)
+print(f'Random Forest Model Accuracy: {accuracy_rf}')
+print(classification_report(y_test, y_pred_rf))
+print(confusion_matrix(y_test, y_pred_rf))
+
+# Модель 3: Gradient Boosting
+gb_model = GradientBoostingClassifier(random_state=42)
+gb_model.fit(X_train_encoded, y_train)
+y_pred_gb = gb_model.predict(X_test_encoded)
+
+# Оценка производительности Gradient Boosting
+accuracy_gb = accuracy_score(y_test, y_pred_gb)
+print(f'Gradient Boosting Model Accuracy: {accuracy_gb}')
+print(classification_report(y_test, y_pred_gb))
+print(confusion_matrix(y_test, y_pred_gb))
+
