@@ -77,3 +77,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 .DS_Store
+
+# ignoring data
+cases/case_3/dataset3
