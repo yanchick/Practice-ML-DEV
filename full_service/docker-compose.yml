@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: your_database
+      MYSQL_USER: your_user
+      MYSQL_PASSWORD: your_password
+
+  inference-server:
+    image: your_inference_server_image
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./ml_models:/ml_models
+
+  fastapi:
+    image: your_fastapi_image
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+      - inference-server
+
+  dash:
+    image: your_dash_image
+    ports:
+      - "8050:8050"
+    depends_on:
+      - fastapi
