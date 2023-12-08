@@ -627,6 +627,20 @@ files = [
 ]
 
 [[package]]
+name = "dill"
+version = "0.3.7"
+description = "serialize all of Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "dill-0.3.7-py3-none-any.whl", hash = "sha256:76b122c08ef4ce2eedcd4d1abd8e641114bfc6c2867f49f3c41facf65bf19f5e"},
+    {file = "dill-0.3.7.tar.gz", hash = "sha256:cc1c8b182eb3013e24bd475ff2e9295af86c1a38eb1aff128dac8962a9ce3c03"},
+]
+
+[package.extras]
+graph = ["objgraph (>=1.7.2)"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -1980,6 +1994,45 @@ files = [
 ptyprocess = ">=0.5"
 
 [[package]]
+name = "phik"
+version = "0.12.3"
+description = "Phi_K correlation analyzer library"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "phik-0.12.3-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:e877b647af1b0b5a8f0134085b2047c7a20d1e4d05f1701a33bed6d3720d4d0a"},
+    {file = "phik-0.12.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:3d17f7ff33e0d1784cc5e969bd5e26840750b790d4f3082b85c3c90915914018"},
+    {file = "phik-0.12.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a8c2b80707db400e293cfb30e1f18a9e52a19ab974169ee49e19ede73bb9bfcb"},
+    {file = "phik-0.12.3-cp310-cp310-win_amd64.whl", hash = "sha256:e120fd130e281e67b09bc7b00f47ec3e9b0ea4ed3ba48944799656270bbf9d7a"},
+    {file = "phik-0.12.3-cp311-cp311-macosx_10_13_x86_64.whl", hash = "sha256:22b72c92b193af9e090cded7fb59e010a52310c476e401fc24facbb8998a5c3d"},
+    {file = "phik-0.12.3-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1010f0ff5f34cda0e461199c86a77513c29f72dd071f6054d2060fc116d3e3c7"},
+    {file = "phik-0.12.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ed2c70c7bb2019c5cf75e30ae31aa9e3cff42af65811f92bd0912c47f04eefde"},
+    {file = "phik-0.12.3-cp311-cp311-win_amd64.whl", hash = "sha256:31a11ba71a918ac4480e7fcc41e527b975a51220a880ed1b6fc1c53ec536ac74"},
+    {file = "phik-0.12.3-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:4cb4fe15290076e9f0a227c46943919d861a4ec4bb0e930f59015f70ba28a1a2"},
+    {file = "phik-0.12.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aba959112c7ff5266d5dbb8a2b92a1cb3b2486a0514aa2ce97d1dabfb1c47e60"},
+    {file = "phik-0.12.3-cp37-cp37m-win_amd64.whl", hash = "sha256:ad340c225bd1b76c42a731036048242e1ee8a486876247b09ed4c51886b0cf67"},
+    {file = "phik-0.12.3-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:e00b7b1ad4ad999e50b7e1c653e1d6a17427a72243b6a5ca2d0728c943a1b7f1"},
+    {file = "phik-0.12.3-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:a09ec2279e8f1180dd9b736d95cdafb7414bb8b5e3d86be4de44f757861a411b"},
+    {file = "phik-0.12.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:10a2f0e58d03e4b596974395aaaeac0bce93457d59ba6985d7bb753cdd236d87"},
+    {file = "phik-0.12.3-cp38-cp38-win_amd64.whl", hash = "sha256:319655506e5184f65b4ae0c3d3e95e895a539880a3110c417d59823f3de58a88"},
+    {file = "phik-0.12.3-cp39-cp39-macosx_10_13_x86_64.whl", hash = "sha256:dfbb20614288df46970640c9127f500f7e03a66631bb9aa3774a2f5222f19f75"},
+    {file = "phik-0.12.3-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:baac8ace316b801cdb38c84cd0e7e35e60d17d50032c34af9879b0cd91c20861"},
+    {file = "phik-0.12.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cfed89c9a1bb88d80df8259bb30aa650244c877aaaca218025d92324074716b9"},
+    {file = "phik-0.12.3-cp39-cp39-win_amd64.whl", hash = "sha256:9d7c78f372175f89854c76b269602dffca5d8715d29f6f5caac7e236705b5acb"},
+    {file = "phik-0.12.3.tar.gz", hash = "sha256:29f5eb2e72d064c3215c106559ed40402c5ec0c39391ccd27afa11f88d397407"},
+]
+
+[package.dependencies]
+joblib = ">=0.14.1"
+matplotlib = ">=2.2.3"
+numpy = ">=1.18.0"
+pandas = ">=0.25.1"
+scipy = ">=1.5.2"
+
+[package.extras]
+test = ["jupyter-client (>=5.2.3)", "nbconvert (>=5.3.1)", "pytest (>=4.0.2)", "pytest-pylint (>=0.13.0)"]
+
+[[package]]
 name = "pillow"
 version = "10.1.0"
 description = "Python Imaging Library (Fork)"
@@ -3223,4 +3276,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.11"
-content-hash = "cca00647a5293cb287621885af62c0dc21bdb43fcbeed81a2501231ff32c57a9"
+content-hash = "ca19964d4dcf6ff7f6641fffa2850906d77ab3a2c6d04807c3793967e4e50bdc"
