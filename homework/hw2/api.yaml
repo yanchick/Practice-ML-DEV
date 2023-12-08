@@ -1,0 +1,154 @@
+paths:
+  /register:
+    post:
+      summary: "User registration"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+                surname:
+                  type: string
+      responses:
+        '200':
+          description: "User registered successfully"
+  /token:
+    post:
+      summary: "Get authentication token"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                scope:
+                  type: string
+      responses:
+        '200':
+          description: "Token obtained successfully"
+  /send_data:
+    post:
+      summary: "Send data for processing"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+      responses:
+        '200':
+          description: "Data sent successfully"
+  /user/bill:
+    get:
+      summary: "Get user bill"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT token"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "User bill retrieved successfully"
+  /user/predict_rows:
+    get:
+      summary: "Get user prediction rows"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT token"
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "User prediction rows retrieved successfully"
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        password:
+          type: string
+        username:
+          type: string
+        surname:
+          type: string
+    Bill:
+      type: object
+      properties:
+        id:
+          type: integer
+        User_id:
+          type: integer
+        money:
+          type: number
+    PredictRow:
+      type: object
+      properties:
+        id:
+          type: integer
+        User_id:
+          type: integer
+        age_group:
+          type: integer
+        gender:
+          type: integer
+        sport_days:
+          type: integer
+        bmi:
+          type: float
+        glucose:
+          type: float
+        diabetes_degree:
+          type: float
+        hemoglobin:
+          type: float
+        insulin:
+          type: float
+        result:
+          type: float
+    InputData:
+      type: object
+      properties:
+        data:
+          model: int
+          age_group: int
+          RIAGENDR: float
+          PAQ605: float
+          BMXBMI: float
+          LBXGLU: float
+          DIQ010: float
+          LBXGLT: float
+          LBXIN: float
+    PersonalData:
+      type: object
+      properties:
+        data:
+          username: str
+          password: str
+          name: str
+          surname: str
