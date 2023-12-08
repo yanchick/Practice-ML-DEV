@@ -1,0 +1,164 @@
+swagger: "2.0"
+info:
+  title: ML Service (Case 2)
+  version: 1.0.0
+paths:
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: Пользователь успешно зарегистрирован
+
+  /auth/login:
+    post:
+      summary: Авторизация пользователя
+      parameters:
+        - in: body
+          name: loginDetails
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        200:
+          description: Успешная авторизация
+
+  /billing/points:
+    get:
+      summary: Просмотр баллов пользователя
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Текущее количество баллов пользователя
+
+    post:
+      summary: Списание баллов за использование сервиса
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+        - in: body
+          name: BillingDetails
+          required: true
+          schema:
+            $ref: "#/definitions/Billing"
+      responses:
+        200:
+          description: Баллы успешно списаны
+          
+  /billing/history:
+    get:
+      summary: Просмотр истории биллинга пользователя
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: История биллинга пользователя
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BillingHistory'
+
+  /prediction:
+    post:
+      summary: Получение предсказания от модели
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+        - in: formData
+          name: modelName
+          required: true
+          type: string
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Отправка файла на предсказание
+          
+    get:
+      summary: Скачивание CSV с результатами предсказаний
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: CSV файл успешно скачан
+          schema:
+            type: file
+            format: binary
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - name
+      - email
+      - password
+
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - email
+      - password
+  
+  Billing:
+    type: object
+    properties:
+      points:
+        type: integer
+    required:
+      - points
+  
+  BillingHistory:
+    type: object
+    properties:
+      BillingHistoryID:
+        type: integer
+      BillingID:
+        type: integer
+      PointsChanged:
+        type: integer
+      Reason:
+        type: string
+      ChangedAt:
+        type: string
+    required:
+      - BillingHistoryID
+      - BillingID
+      - PointsChanged
+      - Reason
+      - ChangedAt
