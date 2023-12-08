@@ -23,3 +23,7 @@
 ### Ссылка на датасет
 
 [dataset5.zip](https://github.com/yanchick/Practice-ML-DEV/blob/master/cases/case_5/dataset5.zip) (11 KB)
+
+### Ссылка на веса моделей
+
+[Веса моделей](https://disk.yandex.ru/d/A9m_HmrB0DzM-Q)
