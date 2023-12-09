@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["Roman Solomatin <36135455+Samoed@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.104.1"
+alembic = "^1.13.0"
+sqlalchemy = "^2.0.23"
+uvicorn = "^0.24.0.post1"
+asyncpg = "^0.29.0"
+pydantic-settings = "^2.1.0"
+python-multipart = "^0.0.6"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.7.1"
+ruff = "^0.1.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+[tool.ruff]
+extend-select= [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "RUF", # ruff
+]
+fix = true
+target-version = "py310"
+line-length = 120
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_redundant_casts = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "scipy",
+    "sklearn",
+]
+ignore_missing_imports = true
