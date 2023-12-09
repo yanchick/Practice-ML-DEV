@@ -24,7 +24,9 @@ class Configs(BaseSettings):
         "sqlite": "sqlite3",
     }
 
-    PROJECT_ROOT: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    PROJECT_ROOT: str = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
 
     # date
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
@@ -32,7 +34,9 @@ class Configs(BaseSettings):
 
     # auth
     SECRET_KEY: str = os.getenv("SECRET_KEY", "key")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30  # 60 minutes * 24 hours * 30 days = 30 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = (
+        60 * 24 * 30
+    )  # 60 minutes * 24 hours * 30 days = 30 days
 
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
@@ -47,14 +51,18 @@ class Configs(BaseSettings):
     DB_ENGINE: str = DB_ENGINE_MAPPER.get(DB, "sqlite")
 
     if DB_ENGINE == "postgresql":
-        DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
-        DATABASE_URI = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
-           db_engine=DB_ENGINE,
-           user=DB_USER,
-           password=DB_PASSWORD,
-           host=DB_HOST,
-           port=DB_PORT,
-           database=ENV_DATABASE_MAPPER[ENV],
+        DATABASE_URI_FORMAT: str = (
+            "{db_engine}://{user}:{password}@{host}:{port}/{database}"
+        )
+        DATABASE_URI = (
+            "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
+                db_engine=DB_ENGINE,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                database=ENV_DATABASE_MAPPER[ENV],
+            )
         )
 
     else:
@@ -74,4 +82,3 @@ class TestConfigs(Configs):
 
 
 configs = Configs()
-

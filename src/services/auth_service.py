@@ -1,15 +1,15 @@
 from datetime import timedelta
 from typing import List
 
-from  core.config import configs
-from  core.exceptions import AuthError
-from  core.security import create_access_token, get_password_hash, verify_password
-from  model.user import User
-from  repository.user_repository import UserRepository
-from  schema.auth_schema import Payload, SignIn, SignUp
-from  schema.user_schema import FindUser
-from  services.base_service import BaseService
-from  util.hash import get_rand_hash
+from core.config import configs
+from core.exceptions import AuthError
+from core.security import create_access_token, get_password_hash, verify_password
+from model.user import User
+from repository.user_repository import UserRepository
+from schema.auth_schema import Payload, SignIn, SignUp
+from schema.user_schema import FindUser
+from services.base_service import BaseService
+from util.hash import get_rand_hash
 
 
 class AuthService(BaseService):
@@ -36,7 +36,9 @@ class AuthService(BaseService):
             is_superuser=found_user.is_superuser,
         )
         token_lifespan = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token, expiration_datetime = create_access_token(payload.dict(), token_lifespan)
+        access_token, expiration_datetime = create_access_token(
+            payload.dict(), token_lifespan
+        )
         sign_in_result = {
             "access_token": access_token,
             "expiration": expiration_datetime,
@@ -46,7 +48,12 @@ class AuthService(BaseService):
 
     def sign_up(self, user_info: SignUp):
         user_token = get_rand_hash()
-        user = User(**user_info.dict(exclude_none=True), is_active=True, is_superuser=False, user_token=user_token)
+        user = User(
+            **user_info.dict(exclude_none=True),
+            is_active=True,
+            is_superuser=False,
+            user_token=user_token,
+        )
         user.password = get_password_hash(user_info.password)
         created_user = self.user_repository.create(user)
         delattr(created_user, "password")

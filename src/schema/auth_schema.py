@@ -27,5 +27,3 @@ class SignInResponse(BaseModel):
     access_token: str
     expiration: datetime
     user_info: User
-
-

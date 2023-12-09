@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.router.auth import get_current_user
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.post("/login")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])-> LoginResponse:
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> LoginResponse:
     # user_dict = fake_users_db.get(form_data.username)
     # if not user_dict:
     #     raise HTTPException(status_code=400, detail="Incorrect username or password")
@@ -21,6 +21,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])-> Lo
     #
     # return {"access_token": user.username, "token_type": "bearer"}
     return LoginResponse(access_token="fake_token", token_type="bearer")
+
 
 @router.get("/signup")
 async def signup(user_info: SingupRequest) -> LoginResponse:
@@ -34,6 +35,7 @@ async def signup(user_info: SingupRequest) -> LoginResponse:
     #
     # return {"access_token": user.username, "token_type": "bearer"}
     return LoginResponse(access_token="fake_token", token_type="bearer")
+
 
 @router.get("/me")
 async def me(token: Annotated[str, Depends(get_current_user)]) -> UserScheme:
