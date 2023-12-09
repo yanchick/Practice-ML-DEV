@@ -1,0 +1,562 @@
+openapi: 3.1.0
+info:
+  title: ml-services
+paths:
+  /:
+    get:
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/auth/sign-in:
+    post:
+      tags:
+        - auth
+      summary: Sign In
+      operationId: sign_in_api_v1_auth_sign_in_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/sign-up:
+    post:
+      tags:
+        - auth
+      summary: Sign Up
+      operationId: sign_up_api_v1_auth_sign_up_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseUser'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/me:
+    get:
+      tags:
+        - auth
+      summary: Get Me
+      operationId: get_me_api_v1_auth_me_get
+      parameters:
+        - name: token
+          in: header
+          required: false
+          schema:
+            type: string
+            title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseUser'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/inference/api/v1/predict/{model_id}:
+    post:
+      tags:
+        - inference
+      summary: Predict
+      operationId: predict_api_v1_inference_api_v1_predict__model_id__post
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Model Id
+        - name: token
+          in: header
+          required: false
+          schema:
+            type: string
+            title: Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InferenceRequestSchema'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResponseSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/inference/api/v1/deploy/:
+    post:
+      tags:
+        - inference
+      summary: Deploy
+      operationId: deploy_api_v1_inference_api_v1_deploy__post
+      parameters:
+        - name: token
+          in: header
+          required: false
+          schema:
+            type: string
+            title: Token
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: >-
+                #/components/schemas/Body_deploy_api_v1_inference_api_v1_deploy__post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeployResponseSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/inference/api/v1/models/list:
+    get:
+      tags:
+        - inference
+      summary: List Classificator Models
+      operationId: list_classificator_models_api_v1_inference_api_v1_models_list_get
+      parameters:
+        - name: ordering
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Ordering
+        - name: page
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: 'null'
+            title: Page
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: string
+              - type: 'null'
+            title: Page Size
+        - name: token
+          in: header
+          required: false
+          schema:
+            type: string
+            title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassificationModelListResponseSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/inference/api/v1/predictions/list:
+    get:
+      tags:
+        - inference
+      summary: List Predictions
+      operationId: list_predictions_api_v1_inference_api_v1_predictions_list_get
+      parameters:
+        - name: ordering
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Ordering
+        - name: page
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: 'null'
+            title: Page
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: string
+              - type: 'null'
+            title: Page Size
+        - name: token
+          in: header
+          required: false
+          schema:
+            type: string
+            title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionListResponseSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    BaseUser:
+      properties:
+        email:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Email
+        name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Name
+        is_active:
+          anyOf:
+            - type: boolean
+            - type: 'null'
+          title: Is Active
+        is_superuser:
+          anyOf:
+            - type: boolean
+            - type: 'null'
+          title: Is Superuser
+      type: object
+      title: BaseUser
+    Body_deploy_api_v1_inference_api_v1_deploy__post:
+      properties:
+        model_name:
+          type: string
+          title: Model Name
+        cost:
+          type: number
+          title: Cost
+        deploy_file:
+          type: string
+          format: binary
+          title: Deploy File
+      type: object
+      required:
+        - model_name
+        - cost
+        - deploy_file
+      title: Body_deploy_api_v1_inference_api_v1_deploy__post
+    ClassificationModelListResponseSchema:
+      properties:
+        founds:
+          items:
+            $ref: '#/components/schemas/FoundResult'
+          type: array
+          title: Founds
+        search_options:
+          anyOf:
+            - $ref: '#/components/schemas/SearchOptions'
+            - type: 'null'
+      type: object
+      required:
+        - founds
+        - search_options
+      title: ClassificationModelListResponseSchema
+    DeployResponseSchema:
+      properties:
+        cold_started:
+          $ref: '#/components/schemas/InferenceServerInputSchema'
+      type: object
+      required:
+        - cold_started
+      title: DeployResponseSchema
+    FoundResult:
+      properties:
+        id:
+          type: integer
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+        - id
+        - name
+      title: FoundResult
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    InferenceRequestSchema:
+      properties:
+        prompt:
+          type: string
+          title: Prompt
+      type: object
+      required:
+        - prompt
+      title: InferenceRequestSchema
+    InferenceServerInputSchema:
+      properties:
+        linked_model_id:
+          type: integer
+          title: Linked Model Id
+        current_port:
+          type: integer
+          title: Current Port
+        current_host:
+          type: string
+          title: Current Host
+        cost:
+          type: number
+          title: Cost
+      type: object
+      required:
+        - linked_model_id
+        - current_port
+        - current_host
+        - cost
+      title: InferenceServerInputSchema
+    PredictionFullSchema:
+      properties:
+        id:
+          type: integer
+          title: Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        predicted_at:
+          type: string
+          format: date-time
+          title: Predicted At
+        predictor:
+          type: integer
+          title: Predictor
+        input_data:
+          type: object
+          title: Input Data
+        output_data:
+          type: object
+          title: Output Data
+      type: object
+      required:
+        - id
+        - created_at
+        - predicted_at
+        - predictor
+        - input_data
+        - output_data
+      title: PredictionFullSchema
+    PredictionListResponseSchema:
+      properties:
+        founds:
+          items:
+            $ref: '#/components/schemas/PredictionFullSchema'
+          type: array
+          title: Founds
+        search_options:
+          anyOf:
+            - $ref: '#/components/schemas/SearchOptions'
+            - type: 'null'
+      type: object
+      required:
+        - founds
+        - search_options
+      title: PredictionListResponseSchema
+    PredictionResponseSchema:
+      properties:
+        predictor:
+          type: integer
+          title: Predictor
+        output_data:
+          $ref: '#/components/schemas/PredictionServerSchema'
+      type: object
+      required:
+        - predictor
+        - output_data
+      title: PredictionResponseSchema
+    PredictionServerSchema:
+      properties:
+        prediction:
+          type: string
+          title: Prediction
+      type: object
+      required:
+        - prediction
+      title: PredictionServerSchema
+    SearchOptions:
+      properties:
+        ordering:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Ordering
+        page:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Page
+        page_size:
+          anyOf:
+            - type: integer
+            - type: string
+            - type: 'null'
+          title: Page Size
+        total_count:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Total Count
+      type: object
+      required:
+        - total_count
+      title: SearchOptions
+    SignIn:
+      properties:
+        email__eq:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Email  Eq
+        password:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Password
+      type: object
+      required:
+        - email__eq
+        - password
+      title: SignIn
+    SignInResponse:
+      properties:
+        access_token:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Access Token
+        expiration:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Expiration
+        user_info:
+          anyOf:
+            - $ref: '#/components/schemas/BaseUser'
+            - type: 'null'
+      type: object
+      required:
+        - access_token
+        - expiration
+        - user_info
+      title: SignInResponse
+    SignUp:
+      properties:
+        email:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Email
+        password:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Password
+        name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Name
+      type: object
+      required:
+        - email
+        - password
+        - name
+      title: SignUp
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
