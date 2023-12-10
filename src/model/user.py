@@ -1,6 +1,6 @@
 from sqlmodel import Field, Text
 
-from  model.base_model import BaseModel
+from src.model.base_model import BaseModel
 
 class User(BaseModel, table=True):
     email: str = Text()

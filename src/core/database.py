@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, orm
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import Session
 
-from model.user import User
+from src.model.user import User
 
 
 @as_declarative()

@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, SecretStr
 
-from  schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
-from  util.schema import AllOptional
+from src.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
+from src.util.schema import AllOptional
 
 
 class User(BaseModel):
@@ -15,8 +15,6 @@ class User(BaseModel):
 
     class Config:
         orm_mode = True
-
-
 
 
 class BaseUser(BaseModel):

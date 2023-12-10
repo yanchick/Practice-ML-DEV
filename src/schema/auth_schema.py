@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from entities.user_schema import User
+from src.schema.user_schema import User
 
 
 class SignIn(BaseModel):

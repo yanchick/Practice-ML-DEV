@@ -3,8 +3,8 @@ from typing import Callable
 
 from sqlalchemy.orm import Session
 
-from  model.user import User
-from  repository.base_repository import BaseRepository
+from src.model.user import User
+from src.repository.base_repository import BaseRepository
 
 
 class UserRepository(BaseRepository):

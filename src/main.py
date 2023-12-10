@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from api.v1.routes import routers as v1_routers
-from core.config import configs
-from core.container import Container
-from util.class_object import singleton
+from src.api.v1.routes import routers as v1_routers
+from src.core.config import configs
+from src.core.container import Container
+from src.util.class_object import singleton
 
 
 @singleton
@@ -44,3 +44,9 @@ app_creator = AppCreator()
 app = app_creator.app
 db = app_creator.db
 container = app_creator.container
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=configs.PORT)

@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "productclassificationservice"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.104.1"
+dependency-injector = "^4.41.0"
+sqlalchemy = "^2.0.23"
+jose = "^1.0.0"
+sqlmodel = "^0.0.14"
+pytz = "^2023.3.post1"
+wheel = "^0.42.0"
+setuptools = "^69.0.2"
+python-dotenv = "^1.0.0"
+uvicorn = "^0.24.0.post1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -4,9 +4,9 @@ from typing import Callable
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
-from  core.config import configs
-from  core.exceptions import DuplicatedError, NotFoundError
-from  util.query_builder import dict_to_sqlalchemy_filter_options
+from src.core.config import configs
+from src.core.exceptions import DuplicatedError, NotFoundError
+from src.util.query_builder import dict_to_sqlalchemy_filter_options
 
 
 class BaseRepository:
