@@ -1,29 +1,26 @@
-# Курс по разработке ML-сервиса(WIP)
+# ProductClassificationService
 
-Добро пожаловать на курс по разработке ML-сервиса! В этом курсе мы будем изучать важные аспекты разработки и внедрения моделей машинного обучения в продуктовую среду. 
+## Business Context
 
-## Описание курса
+The task of product classification provides valuable tools to enhance business efficiency, better understand customers, and develop more successful sales strategies.
 
-В настоящее время модели машинного обучения становятся все более распространенными и востребованными во многих отраслях. Однако, разработка и внедрение ML-сервисов представляют собой сложный процесс, который требует знания не только алгоритмов и моделей, но и навыков разработки программного обеспечения, инфраструктуры и обеспечения безопасности.
+Effective product classification will enable the creation of personalized recommendations tailored to the specific needs of individual users. This, in turn, will increase the likelihood of successful purchases and improve overall interaction with the platform.
 
-В рамках этого курса вы познакомитесь с основными этапами жизненного цикла ML-модели, начиная от сбора и подготовки данных, до развертывания и мониторинга ML-сервиса. Мы рассмотрим различные инструменты и технологии, которые помогут вам разрабатывать и внедрять ML-сервисы в реальных сценариях.
+Through the analysis of product classification, businesses can optimize their assortment by identifying the most in-demand categories. Additionally, this will provide the opportunity to more efficiently manage partner relationships by highlighting successful sellers in different product categories.
 
-## Цели курса
+Such an initiative will not only increase conversion by simplifying the selection and purchase process for users but also enhance the platform's competitiveness in the eyes of customers, attracting new users and strengthening market positions.
 
-- Понять важность разработки и внедрения ML-сервисов в продуктовую среду.
-- Изучить основные этапы жизненного цикла ML-модели и их роль в успешной разработке и внедрении.
-- Освоить практические навыки разработки и внедрения ML-сервисов.
-- Изучить инструменты и технологии, необходимые для успешной разработки и внедрения ML-сервисов.
-- Понять важность мониторинга ML-сервисов.
+## Formal Task Description
 
-## Структура курса
+Develop a product classification service based on the available data.
 
-TBD
+## ML Tasks
 
-## Важность изучения в рамках магистратуры
+- Conduct exploratory data analysis (EDA)
+- Define metrics for evaluating model effectiveness
+- Formulate a baseline model
+- Propose an improved model and deploy it to production
 
-Изучение разработки ML-сервисов является важной частью образования в области машинного обучения на уровне магистратуры. В современном мире, где ML-технологии становятся неотъемлемой частью многих отраслей, специалисты, обладающие навыками разработки продуктовых ML-сервисов, востребованы на рынке труда.
+## Dataset Description
 
-В рамках этого курса вы получите практические навыки и знания, которые помогут вам успешно разрабатывать и внедрять ML-сервисы в реальных проектах. Вы изучите современные инструменты и методологии, которые помогут вам стать востребованным специалистом в области разработки ML-сервисов.
-
-Мы надеемся, что этот курс станет для вас полезным и интересным. Добро пожаловать в увлекательный мир разработки ML-сервисов!
+The dataset was collected from the popular product comparison platform PriceRunner. It includes 35,311 product listings from 10 categories, provided by 306 different sellers.
