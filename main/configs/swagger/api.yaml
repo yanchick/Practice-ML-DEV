@@ -1,0 +1,187 @@
+swagger: "2.0"
+info:
+  title: ML Service API - Cirrhosis Lifespan Prediction
+  version: 1.0.0
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid input data
+
+  /auth/login:
+    post:
+      summary: Authenticate an existing user
+      parameters:
+        - in: body
+          name: loginDetails
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        200:
+          description: Logged in successfully
+        401:
+          description: Unauthorized - Invalid credentials
+
+  /predict:
+    post:
+      summary: Send data for prediction
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+        - in: formData
+          name: modelName
+          required: true
+          type: string
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Input sent successfully
+        400:
+          description: Bad Request - Inconsistent data
+
+    get:
+      summary: Try to get results of model prediction
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Model output retrieved successfully
+          schema:
+            type: number
+            format: float
+        202:
+          description: Prediction is still in progress
+        401:
+          description: Unauthorized - Invalid token
+
+  /billing/balance:
+    get:
+      summary: Check user balance
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user balance
+        401:
+          description: Unauthorized - Invalid token
+
+    post:
+      summary: Add/spend coins
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+        - in: body
+          name: BillingDetails
+          required: true
+          schema:
+            $ref: "#/definitions/Billing"
+      responses:
+        200:
+          description: Balance updated successfully
+        401:
+          description: Unauthorized - Invalid token
+        400:
+          description: Bad Request - Invalid input data
+
+  /history:
+    get:
+      summary: View user actions history
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Actions history list
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ActionsHistory'
+        401:
+          description: Unauthorized - Invalid token
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - name
+      - email
+      - password
+
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - email
+      - password
+
+  Billing:
+    type: object
+    properties:
+      coins:
+        type: integer
+    required:
+      - coins
+
+  ActionsHistory:
+    type: object
+    properties:
+      ID:
+        type: integer
+        description: ID of operation
+      Type:
+        type: string
+        description: Type of billing operation
+      CoinsDiff:
+        type: integer
+        description: Number of coins added/spent
+      Description:
+        type: string
+        description: Description of billing operation
+      Time:
+        type: string
+        description: Date and time of billing operation
+    required:
+      - ID
+      - Type
+      - CoinsDiff
+      - Description
+      - Time
