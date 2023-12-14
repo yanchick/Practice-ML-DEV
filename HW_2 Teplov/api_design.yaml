@@ -1,0 +1,188 @@
+swagger: "2.0"
+info:
+  title: ML Service API
+  version: 1.0.0
+paths:
+  /v1/users:
+    post:
+      summary: Регистрация нового пользователя
+      description: Создает нового пользователя.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          required: true
+          description: Данные нового пользователя.
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: Пользователь успешно зарегистрирован
+        400:
+          description: Некорректные данные пользователя
+        409:
+          description: Пользователь с таким email уже существует
+
+  /v1/sessions:
+    post:
+      summary: Авторизация пользователя
+      description: Позволяет пользователю войти в систему.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: loginDetails
+          required: true
+          description: Данные для авторизации пользователя.
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        200:
+          description: Успешная авторизация
+        401:
+          description: Неправильные учетные данные
+
+  /v1/billing/points:
+    get:
+      summary: Просмотр баллов пользователя
+      description: Возвращает текущее количество баллов пользователя.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Текущее количество баллов пользователя
+
+    post:
+      summary: Списание баллов за использование сервиса
+      description: Списывает баллы с пользовательского счета за использование сервиса.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+        - in: body
+          name: BillingDetails
+          required: true
+          description: Данные для списания баллов.
+          schema:
+            $ref: "#/definitions/Billing"
+      responses:
+        200:
+          description: Баллы успешно списаны
+
+  /v1/billing/history:
+    get:
+      summary: Просмотр истории биллинга пользователя
+      description: Возвращает историю биллинга пользователя.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: История биллинга пользователя
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BillingHistory'
+
+  /v1/prediction:
+    post:
+      summary: Получение предсказания от модели
+      description: Отправляет файл на предсказание модели.
+      consumes:
+        - application/json
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+        - in: formData
+          name: modelName
+          required: true
+          type: string
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Отправка файла на предсказание
+
+    get:
+      summary: Скачивание CSV с результатами предсказаний
+      description: Скачивает CSV файл с результатами предсказаний.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: CSV файл успешно скачан
+          schema:
+            type: file
+            format: binary
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - name
+      - email
+      - password
+
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - email
+      - password
+
+  Billing:
+    type: object
+    properties:
+      points:
+        type: integer
+    required:
+      - points
+
+  BillingHistory:
+    type: object
+    properties:
+      BillingHistoryID:
+        type: integer
+      BillingID:
+        type: integer
+      PointsChanged:
+        type: integer
+      Reason:
+        type: string
+      ChangedAt:
+        type: string
+    required:
+      - BillingHistoryID
+      - BillingID
+      - PointsChanged
+      - Reason
+      - ChangedAt
