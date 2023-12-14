@@ -1,2 +1,4 @@
 SQLAlchemy==2.0.23
+aiosqlite==0.19.0
 dash==2.14.2
+pydantic==2.5.2
