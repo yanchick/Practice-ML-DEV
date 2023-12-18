@@ -1,31 +1,33 @@
-from dependency_injector.wiring import Provide, inject
+import sys
+from typing import Annotated
+from pathlib import Path
+
 from fastapi import APIRouter, Depends
+from dependency_injector.wiring import Provide, inject
 
-from  core.container import Container
-from  core.dependencies import get_current_active_user
-from  schema.auth_schema import SignIn, SignInResponse, SignUp
-from  schema.user_schema import User
-from  services.auth_service import AuthService
-
-router = APIRouter(
-    prefix="/auth",
-    tags=["auth"],
-)
+sys.path.append(str(Path(__file__).resolve().parents[3]))
+from api.v1.schemas.auth_schema import UserLogin, UserRegister, UserLoginResponse, User
+from infrastructure.services.auth_service import AuthService, get_auth_service
+from infrastructure.core.security import get_current_user
 
 
-@router.post("/sign-in", response_model=SignInResponse)
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/login", response_model=UserLoginResponse)
 @inject
-async def sign_in(user_info: SignIn, service: AuthService = Depends(Provide[Container.auth_service])):
-    return service.sign_in(user_info)
+async def login(user_info: UserLogin, service: Annotated[AuthService, Depends(get_auth_service)]):
+    response = await service.login(user_info)
+    return response
 
-
-@router.post("/sign-up", response_model=User)
+@router.post("/register", response_model=User)
 @inject
-async def sign_up(user_info: SignUp, service: AuthService = Depends(Provide[Container.auth_service])):
-    return service.sign_up(user_info)
+async def register(user_info: UserRegister, service: Annotated[AuthService, Depends(get_auth_service)]):
+    response = await service.register(user_info)
+    return response
 
 
 @router.get("/me", response_model=User)
-@inject
-async def get_me(current_user: User = Depends(get_current_active_user)):
+async def get_me(current_user: User = Depends(get_current_user)):
+    """Test function to check dependancy injection"""
     return current_user
