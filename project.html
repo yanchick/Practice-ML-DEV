@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f7f7f7;
+        }
+        </style>
+    <title>Предсказание Глиомы</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Форма Предсказания Глиомы</h2>
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="project">Project:</label>
+                <input type="text" class="form-control" id="project" name="project" required>
+            </div>
+            <div class="form-group">
+                <label for="caseId">Case ID:</label>
+                <input type="text" class="form-control" id="caseId" name="case_id" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select class="form-control" id="gender" name="gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="age">Age at Diagnosis:</label>
+                <input type="number" class="form-control" id="age" name="age_at_diagnosis" required>
+            </div>
+            <div class="form-group">
+                <label for="primaryDiagnosis">Primary Diagnosis:</label>
+                <input type="text" class="form-control" id="primaryDiagnosis" name="primary_diagnosis" required>
+            </div>
+            <div class="form-group">
+                <label for="race">Race:</label>
+                <input type="text" class="form-control" id="race" name="race" required>
+            </div>
+            <!-- Добавление полей для генетических маркеров -->
+            <div class="form-group">
+                <label for="idh1">IDH1:</label>
+                <input type="number" class="form-control" id="idh1" name="idh1" required>
+            </div>
+            <div class="form-group">
+                <label for="tp53">TP53:</label>
+                <input type="number" class="form-control" id="tp53" name="tp53" required>
+            </div>
+            <div class="form-group">
+                <label for="atrx">ATRX:</label>
+                <input type="number" class="form-control" id="atrx" name="atrx" required>
+            </div>
+            <div class="form-group">
+                <label for="pten">PTEN:</label>
+                <input type="number" class="form-control" id="pten" name="pten" required>
+            </div>
+            <div class="form-group">
+                <label for="egfr">EGFR:</label>
+                <input type="number" class="form-control" id="egfr" name="egfr" required>
+            </div>
+            <div class="form-group">
+                <label for="cic">CIC:</label>
+                <input type="number" class="form-control" id="cic" name="cic" required>
+            </div>
+            <div class="form-group">
+                <label for="muc16">MUC16:</label>
+                <input type="number" class="form-control" id="muc16" name="muc16" required>
+            </div>
+            <div class="form-group">
+                <label for="pik3ca">PIK3CA:</label>
+                <input type="number" class="form-control" id="pik3ca" name="pik3ca" required>
+            </div>
+            <div class="form-group">
+                <label for="nf1">NF1:</label>
+                <input type="number" class="form-control" id="nf1" name="nf1" required>
+            </div>
+            <div class="form-group">
+                <label for="pik3r1">PIK3R1:</label>
+                <input type="number" class="form-control" id="pik3r1" name="pik3r1" required>
+            </div>
+            <div class="form-group">
+                <label for="fubp1">FUBP1:</label>
+                <input type="number" class="form-control" id="fubp1" name="fubp1" required>
+            </div>
+            <div class="form-group">
+                <label for="rb1">RB1:</label>
+                <input type="number" class="form-control" id="rb1" name="rb1" required>
+            </div>
+            <div class="form-group">
+                <label for="notch1">NOTCH1:</label>
+                <input type="number" class="form-control" id="notch1" name="notch1" required>
+            </div>
+            <div class="form-group">
+                <label for="bcor">BCOR:</label>
+                <input type="number" class="form-control" id="bcor" name="bcor" required>
+                <div class="form-group">
+                    <label for="csmd3">CSMD3:</label>
+                    <input type="number" class="form-control" id="csmd3" name="csmd3" required>
+                </div>
+                <div class="form-group">
+                    <label for="smarca4">SMARCA4:</label>
+                    <input type="number" class="form-control" id="smarca4" name="smarca4" required>
+                </div>
+                <div class="form-group">
+                    <label for="grin2a">GRIN2A:</label>
+                    <input type="number" class="form-control" id="grin2a" name="grin2a" required>
+                </div>
+                <div class="form-group">
+                    <label for="idh2">IDH2:</label>
+                    <input type="number" class="form-control" id="idh2" name="idh2" required>
+                </div>
+                <div class="form-group">
+                    <label for="fat4">FAT4:</label>
+                    <input type="number" class="form-control" id="fat4" name="fat4" required>
+                </div>
+                <div class="form-group">
+                    <label for="pdgfra">PDGFRA:</label>
+                    <input type="number" class="form-control" id="pdgfra" name="pdgfra" required>
+                </div>
+            
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Отменяет действие по умолчанию формы
+            console.log('Форма отправлена'); // Должно появиться в консоли при отправке формы
+    
+            const formData = new FormData(e.target);
+            const formProps = Object.fromEntries(formData);
+            console.log('Данные формы:', formProps); 
+
+            // Убедитесь, что адрес и порт совпадают с теми, на которых запущен ваш FastAPI сервер
+            fetch('http://localhost:8000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formProps)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевой ответ не окей');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Обработка и отображение ответа', data); 
+                // Обработка и отображение ответа в формате HTML
+                document.getElementById('result').innerHTML = '<strong>Предсказание:</strong> ' + data.prediction + ', <strong>Вероятность:</strong> ' + data.probability.toFixed(2);
+            })
+            .catch(error => {
+                console.error('Ошибка при выполнении fetch запроса:', error);
+                document.getElementById('result').innerHTML = 'Произошла ошибка при обработке вашего запроса.';
+            });
+            return false;
+        });
+    </script>
+</body>
+</html>
