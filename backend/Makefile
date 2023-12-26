@@ -26,6 +26,10 @@ export-dependencies:
 database:
 	docker compose up database -d
 
+.PHONY: redis
+redis:
+	docker compose up redis -d
+
 .PHONY: test
 test:
 	poetry run pytest --cov=app --cov-report=html

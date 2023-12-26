@@ -7,7 +7,7 @@ from src.schemes.user_schemes import ModelListScheme, ModelScheme, PredictionIte
 router = APIRouter(prefix="/model", tags=["model"], responses=OpenAPIResponses.HTTP_401_UNAUTHORIZED)
 
 
-@router.get("/predict")
+@router.post("/predict")
 async def predict(model_id: int, user: CurrentUser) -> PredictionScheme:
     # user_dict = fake_users_db.get(form_data.username)
     # if user_dict:

@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     postgres_port: int = Field(default=5432)
     postgres_user: str
     postgres_password: str
+
+    redis_password: str
+    redis_host: str = Field(default="localhost")
+    redis_port: int = Field(default=6379)
+
     # to get a string like this run:
     # openssl rand -hex 32
     secret_key: str = Field(default="88088d1326a9357804caf831f8c7d97d3d04dcffbf36c1c382486cec6f22f564")
