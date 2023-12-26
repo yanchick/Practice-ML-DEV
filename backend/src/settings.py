@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     postgres_port: int = Field(default=5432)
     postgres_user: str
     postgres_password: str
+    # to get a string like this run:
+    # openssl rand -hex 32
+    SECRET_KEY: str = Field(default="88088d1326a9357804caf831f8c7d97d3d04dcffbf36c1c382486cec6f22f564")
+    ALGORITHM: str = Field(default="HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60 * 24 * 3)  # default 3 days
+    debug: bool = Field(default=False)
 
     @property
     def database_settings(self) -> Any:

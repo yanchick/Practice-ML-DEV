@@ -27,4 +27,9 @@ class SessionManager:
 async def get_session() -> AsyncSession:
     session_maker = SessionManager().get_session_maker()
     async with session_maker() as session:
-        return session
+        yield session
+
+
+async def get_session_maker() -> AsyncSession:
+    session_maker = SessionManager().get_session_maker()
+    return session_maker()

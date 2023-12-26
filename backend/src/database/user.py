@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class User(Base):
     __tablename__ = "user"
 
-    username: Mapped[str]
+    username: Mapped[str] = mapped_column(unique=True, index=True)
     password: Mapped[str]
     balance: Mapped[float] = mapped_column(default=0.0)
     is_active: Mapped[bool] = mapped_column(default=True)
@@ -20,3 +20,11 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
+
+    def to_dict(self) -> dict[str, str | float | bool]:
+        return {
+            "username": self.username,
+            "balance": self.balance,
+            "is_active": self.is_active,
+            "is_superuser": self.is_superuser,
+        }

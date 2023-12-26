@@ -1,51 +1,41 @@
-from typing import Annotated
+from fastapi import APIRouter, HTTPException, status
 
-from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordRequestForm
-
-from src.router.auth import get_current_user
-from src.schemes.user_scemes import LoginResponse, SingupRequest, UserScheme
+from src.auth import CurrentUser, authenticate_user, create_access_token, get_password_hash
+from src.repository.user import UserRepository
+from src.schemes.auth import Token
+from src.schemes.router import AuthFormData, Session
+from src.schemes.user_scemes import SingUpRequest, UserScheme
 
 router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.post("/login")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> LoginResponse:
-    # user_dict = fake_users_db.get(form_data.username)
-    # if not user_dict:
-    #     raise HTTPException(status_code=400, detail="Incorrect username or password")
-    # user = UserInDB(**user_dict)
-    # hashed_password = fake_hash_password(form_data.password)
-    # if not hashed_password == user.hashed_password:
-    #     raise HTTPException(status_code=400, detail="Incorrect username or password")
-    #
-    # return {"access_token": user.username, "token_type": "bearer"}
-    return LoginResponse(access_token="fake_token", token_type="bearer")
+async def login(form_data: AuthFormData) -> Token:
+    user = await authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = create_access_token(data={"sub": user.username})
+    return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/signup")
-async def signup(user_info: SingupRequest) -> LoginResponse:
-    # user_dict = fake_users_db.get(form_data.username)
-    # if user_dict:
-    #     raise HTTPException(status_code=400, detail="Username already registered")
-    # user = UserInDB(**user_dict)
-    # hashed_password = fake_hash_password(form_data.password)
-    # if not hashed_password == user.hashed_password:
-    #     raise HTTPException(status_code=400, detail="Incorrect username or password")
-    #
-    # return {"access_token": user.username, "token_type": "bearer"}
-    return LoginResponse(access_token="fake_token", token_type="bearer")
+@router.post("/signup")
+async def signup(user_info: SingUpRequest, session: Session) -> Token:
+    user = await UserRepository.get_user_by_username(user_info.username, session)
+    if user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    hashed_password = get_password_hash(user_info.password)
+    user = await UserRepository.create_user(
+        username=user_info.username,
+        password=hashed_password,
+    )
+    token = create_access_token(user.to_dict())
+    return Token(access_token=token, token_type="bearer")
 
 
 @router.get("/me")
-async def me(token: Annotated[str, Depends(get_current_user)]) -> UserScheme:
-    # user_dict = fake_users_db.get(form_data.username)
-    # if user_dict:
-    #     raise HTTPException(status_code=400, detail="Username already registered")
-    # user = UserInDB(**user_dict)
-    # hashed_password = fake_hash_password(form_data.password)
-    # if not hashed_password == user.hashed_password:
-    #     raise HTTPException(status_code=400, detail="Incorrect username or password")
-    #
-    # return {"access_token": user.username, "token_type": "bearer"}
-    return UserScheme(username="fake_username", balance=0.0)
+async def me(user: CurrentUser) -> UserScheme:
+    return UserScheme(**user.to_dict())

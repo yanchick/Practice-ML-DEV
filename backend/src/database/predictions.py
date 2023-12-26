@@ -13,7 +13,7 @@ class Prediction(Base):
 
     model_id: Mapped[int] = mapped_column(ForeignKey("model.id"))
     model: Mapped[Model] = relationship("Model", back_populates="predictions")
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
     user: Mapped[User] = relationship("User", back_populates="predictions")
     input: Mapped[dict[str, Any]] = mapped_column(JSON)
     output: Mapped[dict[str, Any]] = mapped_column(JSON)

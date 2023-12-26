@@ -14,6 +14,9 @@ uvicorn = "^0.24.0.post1"
 asyncpg = "^0.29.0"
 pydantic-settings = "^2.1.0"
 python-multipart = "^0.0.6"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+psycopg2-binary = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -23,6 +26,7 @@ ruff = "^0.1.7"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
 [tool.ruff]
 extend-select= [
     "E",   # pycodestyle errors

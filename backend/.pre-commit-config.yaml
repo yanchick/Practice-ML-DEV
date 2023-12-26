@@ -26,7 +26,7 @@ repos:
     -   id: mypy
         name: Mypy
         language: python
-        entry: pdm run mypy
+        entry: poetry run mypy
         types: [python]
         additional_dependencies: ["mypy>=1.7"]
         require_serial: true
