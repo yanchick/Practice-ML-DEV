@@ -19,14 +19,8 @@ class UserRepository:
         return result
 
     @staticmethod
-    async def create_user(username: str, password: str, session: AsyncSession | None = None) -> User:
-        should_close_session = session is None
-        if session is None:
-            session = await get_session_maker()
-            await session.begin()
+    async def create_user(username: str, password: str, session: AsyncSession) -> User:
         user = User(username=username, password=password)
         session.add(user)
         await session.commit()
-        if should_close_session:
-            await session.close()
         return user

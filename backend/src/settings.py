@@ -2,6 +2,7 @@ from typing import Any
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import IPvAnyAddress
 
 
 class Settings(BaseSettings):
@@ -14,10 +15,13 @@ class Settings(BaseSettings):
     postgres_password: str
     # to get a string like this run:
     # openssl rand -hex 32
-    SECRET_KEY: str = Field(default="88088d1326a9357804caf831f8c7d97d3d04dcffbf36c1c382486cec6f22f564")
-    ALGORITHM: str = Field(default="HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60 * 24 * 3)  # default 3 days
+    secret_key: str = Field(default="88088d1326a9357804caf831f8c7d97d3d04dcffbf36c1c382486cec6f22f564")
+    algorithm: str = Field(default="HS256")
+    access_token_expire_minutes: int = Field(default=60 * 24 * 3)  # default 3 days
+
     debug: bool = Field(default=False)
+    host: IPvAnyAddress = Field(default="0.0.0.0")
+    port: int = Field(default=8000)
 
     @property
     def database_settings(self) -> Any:

@@ -33,3 +33,8 @@ class ModelScheme(BaseModel):
 
 class ModelListScheme(BaseModel):
     models: list[ModelScheme]
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

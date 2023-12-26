@@ -7,7 +7,6 @@ from passlib.context import CryptContext
 
 from src.database.user import User
 from src.repository.user import UserRepository
-from src.schemes.auth import TokenData
 from src.schemes.router import TokenDepends
 from src.settings import Settings
 
@@ -35,9 +34,9 @@ async def authenticate_user(username: str, password: str) -> User | None:
 
 def create_access_token(data: dict[str, Any]):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
 
 async def get_current_user(token: TokenDepends):
@@ -47,14 +46,13 @@ async def get_current_user(token: TokenDepends):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         username: str | None = payload.get("sub", None)
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = await UserRepository.get_user_by_username(username=token_data.username)
+    user = await UserRepository.get_user_by_username(username)
     if user is None:
         raise credentials_exception
     return user

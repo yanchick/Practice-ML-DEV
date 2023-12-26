@@ -3,11 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.router import model_router, predictions_router, user_router
 from src.settings import Settings
+from src.schemes.router import OpenAPIResponses
 
-app = FastAPI()
-app.include_router(user_router, prefix="/v1")
-app.include_router(predictions_router, prefix="/v1")
-app.include_router(model_router, prefix="/v1")
+v1_prefix = "/v1"
+
+app = FastAPI(responses=OpenAPIResponses.HTTP_422_UNPROCESSABLE_ENTITY)
+app.include_router(user_router, prefix=v1_prefix)
+app.include_router(predictions_router, prefix=v1_prefix)
+app.include_router(model_router, prefix=v1_prefix)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,4 +22,5 @@ app.add_middleware(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=Settings().debug)
+    settings = Settings()
+    uvicorn.run("main:app", host=str(settings.host), port=settings.port, reload=settings.debug)
