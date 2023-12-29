@@ -1,0 +1,47 @@
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, JSON
+from sqlalchemy.orm import declarative_base, relationship
+from datetime import datetime
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+    user_id = Column(Integer, primary_key=True)
+    login = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    last_sign_in = Column(DateTime) 
+    balance = Column(Float, default=0.0)
+    transactions = relationship('Transaction', back_populates='user')
+    predictions = relationship('Prediction', back_populates='user')  
+
+class Transaction(Base):
+    __tablename__ = 'transactions'
+    transaction_id = Column(Integer, primary_key=True)
+    datetime = Column(DateTime, default=datetime.utcnow)
+    user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
+    amount = Column(Float, nullable=False)
+    model_id = Column(Integer, ForeignKey('models.model_id'), nullable=False)
+    status = Column(String)  
+    user = relationship('User', back_populates='transactions')
+    prediction = relationship('Prediction', uselist=False, back_populates='transaction')
+
+class Model(Base):
+    __tablename__ = 'models'
+    model_id = Column(Integer, primary_key=True)
+    description = Column(String, nullable=False)
+    price = Column(Float, nullable=False)
+    pickle_file_path = Column(String, nullable=False)
+    transactions = relationship('Transaction', back_populates='model')
+    predictions = relationship('Prediction', back_populates='model')  
+
+class Prediction(Base):
+    __tablename__ = 'predictions'
+    id = Column(Integer, primary_key=True, index=True)
+    input_data = Column(JSON) 
+    output_data = Column(String)  
+    transaction_id = Column(Integer, ForeignKey('transactions.transaction_id'), nullable=False)
+    transaction = relationship('Transaction', back_populates='prediction')
+    user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
+    user = relationship('User', back_populates='predictions')
+    model_id = Column(Integer, ForeignKey('models.model_id'), nullable=False)
+    model = relationship('Model', back_populates='predictions')
