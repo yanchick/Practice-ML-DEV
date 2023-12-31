@@ -4,6 +4,7 @@ import requests
 class Inference_handler:
     def __init__(self, inference_server_url="http://127.0.0.1:8936"):
         self.inference_server_url = inference_server_url
+        self.predict_url = f"{self.inference_server_url}/predict"
 
     def _check_data(
         self,
@@ -83,7 +84,6 @@ class Inference_handler:
             hemoglobin,
             insulin,
         )
-
         if checked_data == "Invalid data":
             return None
         else:
@@ -99,11 +99,8 @@ class Inference_handler:
                 "LBXIN": checked_data[8],
             }
 
-            response = requests.post(self.inference_server_url, json=data)
-
+            response = requests.post(self.predict_url, json=data)
             if response.status_code == 200:
-                print(response)
-                print(response.json())
                 return response.json()["prediction"][0]
             else:
                 return None

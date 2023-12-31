@@ -27,27 +27,9 @@ class InputData(BaseModel):
     LBXIN: float  # Уровни инсулина в крови респондента от 1 до 102
 
 
-
 @app.post("/predict")
 def predict(data: InputData):
     try:
-        print(data)
-        print(
-            minmaxscaler.transform(
-                [
-                    [
-                        data.age_group,
-                        data.RIAGENDR,
-                        data.PAQ605,
-                        data.BMXBMI,
-                        data.LBXGLU,
-                        data.DIQ010,
-                        data.LBXGLT,
-                        data.LBXIN,
-                    ]
-                ]
-            )
-        )
         if data.model == 0:
             result = models[0].predict(
                 minmaxscaler.transform(

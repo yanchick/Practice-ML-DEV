@@ -6,13 +6,11 @@ from fastapi import FastAPI, HTTPException, Depends
 
 import secrets
 
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-
 
 class JWT_worker:
     def __init__(self):
         self.SECRET_KEY = self.generate_secret_key()
+        self.ALGORITHM = "HS256"
         self.oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
     def generate_secret_key(self, length: int = 32) -> str:
@@ -27,7 +25,9 @@ class JWT_worker:
         else:
             expire = datetime.utcnow() + timedelta(minutes=15)
         to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(
+            to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM
+        )
         return encoded_jwt
 
     def get_current_user(self, token: str):
@@ -39,8 +39,10 @@ class JWT_worker:
             headers={"WWW-Authenticate": "Bearer"},
         )
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username: str = payload.get("sub")
+            payload = jwt.decode(
+                token, self.SECRET_KEY, algorithms=[self.ALGORITHM]
+            )
+            username: str = payload.get("username")
             if username is None:
                 raise credentials_exception
         except jwt.JWTError:

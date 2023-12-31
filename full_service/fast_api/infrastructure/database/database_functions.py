@@ -58,10 +58,14 @@ def get_predict_rows_by_user(user_id, session=get_session()):
 
 
 def update_bill(bill_id, new_money_value, session=get_session()):
-    bill = session.query(Bill).get(bill_id)
-    if bill:
-        bill.money = new_money_value
-        session_commit(session)
+    try:
+        bill = session.query(Bill).get(bill_id)
+        if bill:
+            bill.money = new_money_value
+            session_commit(session)
+            return 1
+    except:
+        return 0
 
 
 def create_user(
@@ -132,6 +136,7 @@ def update_user_fields(
 
 def add_predict_row(
     user_id,
+    model,
     age_group,
     gender,
     sport_days,
@@ -145,6 +150,7 @@ def add_predict_row(
 ):
     new_predict_row = PredictRow(
         User_id=user_id,
+        model=model,
         age_group=age_group,
         gender=gender,
         sport_days=sport_days,

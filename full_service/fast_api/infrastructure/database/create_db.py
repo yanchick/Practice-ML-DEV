@@ -37,6 +37,7 @@ class PredictRow(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     User_id = Column(Integer, ForeignKey("User.id"), nullable=False)
+    model = Column(Integer, nullable=False)
     age_group = Column(Integer, nullable=False)
     gender = Column(Integer, nullable=False)
     sport_days = Column(Integer, nullable=False)

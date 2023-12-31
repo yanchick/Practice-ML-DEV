@@ -20,11 +20,13 @@ app = FastAPI()
 # Создаем модель пользователя
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+
 
 # Создаем базу данных
 engine = create_engine(DATABASE_URL)
@@ -39,20 +41,24 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Создаем токен
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
 # Определение модели для создания нового пользователя
 class UserCreate(BaseModel):
     username: str
     password: str
+
 
 # Определение JWT токена
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 # Функция для создания JWT токена
 def create_jwt_token(data: dict):
     to_encode = jsonable_encoder(data)
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 # Роут для создания нового пользователя
 @app.post("/users/", response_model=Token)
@@ -65,6 +71,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     access_token = create_jwt_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 # Функция для получения базы данных
 def get_db():
     db = SessionLocal()
@@ -73,8 +80,11 @@ def get_db():
     finally:
         db.close()
 
+
 # Функция для получения текущего пользователя из токена
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -88,6 +98,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
     return username
+
 
 # Роут для получения информации о текущем пользователе
 @app.get("/users/me/", response_model=str)

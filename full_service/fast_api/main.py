@@ -1,7 +1,9 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from typing import Any
+from configs.main import model_to_money
 
 from infrastructure.handlers.main import Inference_handler
 
@@ -24,14 +26,15 @@ from jwt_work.main import JWT_worker
 
 class InputData(BaseModel):
     model: int
-    age_group: int
-    RIAGENDR: float
-    PAQ605: float
-    BMXBMI: float
-    LBXGLU: float
-    DIQ010: float
-    LBXGLT: float
-    LBXIN: float
+    age_group: Any
+    RIAGENDR: Any
+    PAQ605: Any
+    BMXBMI: Any
+    LBXGLU: Any
+    DIQ010: Any
+    LBXGLT: Any
+    LBXIN: Any
+    token: str
 
 
 class PersonalData(BaseModel):
@@ -92,47 +95,81 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 # Отправка данных для обработки моделью
 @app.post("/send_data")
-def send_data_for_processing(
-    data: InputData, current_user: str = Depends(JWT_worker.get_current_user)
-):
+def send_data_for_processing(data: InputData):
+    current_user = jwt_worker.get_current_user(data.token)
     user = get_user_by_username(current_user)
     if user:
-        result = Inference_handler.predict(data)
-        add_predict_row(
-            user.id,
+        checked_data = main_handler._check_data(
+            data.model,
             data.age_group,
-            data.gender,
-            data.sport_days,
-            data.bmi,
-            data.glucose,
-            data.diabetes_degree,
-            data.hemoglobin,
-            data.insulin,
-            result,
+            data.RIAGENDR,
+            data.PAQ605,
+            data.BMXBMI,
+            data.LBXGLU,
+            data.DIQ010,
+            data.LBXGLT,
+            data.LBXIN,
         )
-        return {"message": "Data processed successfully"}
+        result = main_handler.predict(
+            data.model,
+            data.age_group,
+            data.RIAGENDR,
+            data.PAQ605,
+            data.BMXBMI,
+            data.LBXGLU,
+            data.DIQ010,
+            data.LBXGLT,
+            data.LBXIN,
+        )
+        if result is not None:
+            add_predict_row(
+                user.id,
+                checked_data[0],
+                checked_data[1],
+                checked_data[2],
+                checked_data[3],
+                checked_data[4],
+                checked_data[5],
+                checked_data[6],
+                checked_data[7],
+                checked_data[8],
+                result,
+            )
+            cost = model_to_money[int(data.model)]
+            bill = get_bill_by_user_id(user.id)
+            if update_bill(bill.id, bill.money - cost):
+                return {
+                    "message": "Data processed successfully",
+                    "prediction": result,
+                }
+            else:
+                raise HTTPException(status_code=404, detail="User not found")
+        else:
+            return {"message": "Data processing failed"}
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
 
 @app.get("/user/bill")
-def get_user_bill(current_user: str = Depends(JWT_worker.get_current_user)):
+def get_user_bill(request: Request):
+    headers = request.headers
+    current_user = jwt_worker.get_current_user(headers["Authorization"])
     user = get_user_by_username(current_user)
     if user:
         bill = get_bill_by_user_id(user.id)
         return {
             "user_id": user.id,
             "username": user.username,
-            "bill": bill.money if bill > 0 else 0.0,
+            "bill": bill.money if bill.money > 0 else 0.0,
         }
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
 
 @app.get("/user/predict_rows")
-def get_user_predict_rows(
-    current_user: str = Depends(JWT_worker.get_current_user),
-):
+def get_user_predict_rows(request: Request):
+    headers = request.headers
+    current_user = jwt_worker.get_current_user(headers["Authorization"])
     user = get_user_by_username(current_user)
     if user:
         predict_rows = get_predict_rows_by_user(user.id)
