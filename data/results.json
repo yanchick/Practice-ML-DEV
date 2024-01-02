@@ -1,0 +1,38 @@
+{
+    "Model_001": {
+        "model": "LogisticRegression",
+        "vectorizer": "CountVectorizer",
+        "params": "min_df=20, max_iter=1000",
+        "metrics": {
+            "cv_accuracy": 0.952,
+            "accuracy": 0.97
+        },
+        "time_prediction_mac_m2": {
+            "mean": 0.0004
+        }
+    },
+    "Model_002": {
+        "model": "RandomForestClassifier",
+        "vectorizer": "CountVectorizer",
+        "params": "min_df=20",
+        "metrics": {
+            "cv_accuracy": 0.942,
+            "accuracy": 0.9636
+        },
+        "time_prediction_mac_m2": {
+            "mean": 0.027
+        }
+    },
+    "Model_003": {
+        "model": "DecisionTreeClassifier",
+        "vectorizer": "TfidfVectorizer",
+        "params": "default",
+        "metrics": {
+            "cv_accuracy": 0.923,
+            "accuracy": 0.981
+        },
+        "time_prediction_mac_m2": {
+            "mean": 0.0008
+        }
+    }
+}
