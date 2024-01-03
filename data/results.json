@@ -16,11 +16,11 @@
         "vectorizer": "CountVectorizer",
         "params": "min_df=20",
         "metrics": {
-            "cv_accuracy": 0.942,
-            "accuracy": 0.9636
+            "cv_accuracy": 0.9336,
+            "accuracy": 0.961
         },
         "time_prediction_mac_m2": {
-            "mean": 0.027
+            "mean": 0.01374
         }
     },
     "Model_003": {
