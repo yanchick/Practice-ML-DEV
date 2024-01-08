@@ -1,74 +1,62 @@
 """FastAPI router module."""
-from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks
+from fastapi import Depends, FastAPI
+from sqlalchemy.orm import Session
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from pathlib import Path
-from ultralytics import YOLO
-from ultralytics.data.loaders import LoadImages
-from tempfile import NamedTemporaryFile
-from . import schemas
+from . import crud, schemas, database
 
 app = FastAPI()
-app.mount("/app", StaticFiles(directory="front/dist", html=True), name="static")
 app.add_middleware(GZipMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
-model = YOLO("./yolov8s_traffic.pt")
 
-storage: dict[schemas.VideoDetection] = {}
+database.Base.metadata.create_all(bind=database.engine)
 
 
-def process_video(filename: str, id: str):
+def get_db():
+    """Connect to DB."""
+    db = database.SessionLocal()
     try:
-        results = model(filename, stream=True)
-
-        total_frames = 0
-        for _f in LoadImages(filename):
-            total_frames += 1
-        storage[id] = schemas.VideoDetection(total_frames=total_frames)
-
-        for num_frame, result in enumerate(results):
-            objects = []
-            for i, cls in enumerate(result.boxes.cls.tolist()):
-                objects.append(
-                    schemas.DetectionBox(
-                        cls=result.names[cls],
-                        confidence=result.boxes.conf[i].item(),
-                        coords=result.boxes.xyxyn[i].tolist(),
-                    )
-                )
-            storage[id].frames.append(
-                schemas.Frame(objects=objects, num_frame=num_frame)
-            )
+        crud.sync_models(db)
+        yield db
     finally:
-        Path(filename).unlink()
+        db.close()
 
 
-@app.post("/detection/{id}")
-async def upload_video(file: UploadFile, id: str, bg: BackgroundTasks):
-    """Run CV on video."""
-    try:
-        suffix = Path(file.filename).suffix
-        with NamedTemporaryFile("wb", delete=False, suffix=suffix) as temp:
-            contents = await file.read()
-            temp.write(contents)
-            bg.add_task(process_video, temp.name, id)
-    except Exception:
-        raise HTTPException(500)
-    finally:
-        await file.close()
+@app.get("/models")
+async def list_models(db: Session = Depends(get_db)) -> list[schemas.LearnModel]:
+    """List available ML models"""
 
-    return {}
+    return crud.list_models(db)
 
 
-@app.get("/detection/{id}")
-async def get_video(id: str, skip: int = 0) -> schemas.VideoDetection:
-    """Get video status by id."""
-    if id not in storage:
-        raise HTTPException(404)
-    detection = storage.get(id)
-    frames_page = [f for f in detection.frames if f.num_frame > skip]
-    return schemas.VideoDetection(
-        total_frames=detection.total_frames, frames=frames_page
-    )
+@app.get("/balance/{id}")
+async def get_balance(user_id: int, db: Session = Depends(get_db)) -> schemas.Balance:
+    """Get my balance."""
+
+    return schemas.Balance(balance=crud.get_balance(user_id, db))
+
+
+@app.get("/jobs")
+async def list_jobs(user_id: int, db: Session = Depends(get_db)) -> list[schemas.Job]:
+    """List my jobs."""
+
+    return crud.list_jobs(user_id, db)
+
+
+@app.get("/jobs/{job_id}")
+async def get_job(
+    user_id: int, job_id: int, db: Session = Depends(get_db)
+) -> schemas.Job:
+    """List my jobs."""
+
+    return crud.get_job(user_id, job_id, db)
+
+
+@app.post("/jobs")
+async def start_job(
+    user_id: int, job: schemas.JobCreate, db: Session = Depends(get_db)
+) -> schemas.Job:
+    """Create a new job."""
+
+    return crud.start_job(user_id, job.model_id, db)

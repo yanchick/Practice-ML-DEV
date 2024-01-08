@@ -1,0 +1,38 @@
+"""Database models for malware detector app."""
+
+from sqlalchemy import Column, Integer, Text
+from .database import Base
+
+
+class BalanceDebit(Base):
+    """User account debits."""
+
+    __tablename__ = "debits"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, index=True)
+    amount = Column(Integer)
+
+
+class Job(Base):
+    """Computation executed in the service."""
+
+    __tablename__ = "jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, index=True)
+    status = Column(Integer)
+    cost = Column(Integer)
+    # ISO8601
+    created_at = Column(Text)
+    result = Column(Text)
+
+
+class LearnModel(Base):
+    """Model that can be run in a job."""
+
+    __tablename__ = "models"
+
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(Text)
+    cost = Column(Integer)

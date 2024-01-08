@@ -1,6 +1,6 @@
 """API schema for ML app."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from enum import IntEnum
 
@@ -9,8 +9,6 @@ class Balance(BaseModel):
     """User account balance."""
 
     balance: int
-    frozen: int
-    raw_balance: int
 
 
 class JobStatus(IntEnum):
@@ -28,6 +26,12 @@ class Job(BaseModel):
     cost: int
     created_at: datetime
     result: list[any]
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class JobCreate(BaseModel):
+    model_id: int
 
 
 class LearnModel(BaseModel):
