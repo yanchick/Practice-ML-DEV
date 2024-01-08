@@ -20,6 +20,10 @@ class Balance(BaseModel):
     balance: int
 
 
+class Deposit(BaseModel):
+    amount: int
+
+
 class JobStatus(IntEnum):
     """Job status."""
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from .database import get_async_session
-from . import schemas, crud
+from . import schemas, crud, users
 
 router = APIRouter()
 
@@ -12,11 +12,25 @@ async def list_models(db=Depends(get_async_session)) -> list[schemas.LearnModel]
     return await crud.list_models(db)
 
 
-@router.get("/balance/{id}")
-async def get_balance(user_id: int, db=Depends(get_async_session)) -> schemas.Balance:
+@router.get("/balance")
+async def get_balance(
+    user=Depends(users.current_user), db=Depends(get_async_session)
+) -> schemas.Balance:
     """Get my balance."""
 
-    return schemas.Balance(balance=crud.get_balance(user_id, db))
+    return schemas.Balance(balance=await crud.get_balance(user.id, db))
+
+
+@router.post("/balance/deposit")
+async def deposit_balance(
+    balance: schemas.Deposit,
+    user=Depends(users.current_user),
+    db=Depends(get_async_session),
+) -> schemas.Balance:
+    """Get my balance."""
+
+    await crud.deposit_balance(user.id, balance.amount, db)
+    return schemas.Balance(balance=await crud.get_balance(user.id, db))
 
 
 @router.get("/jobs")

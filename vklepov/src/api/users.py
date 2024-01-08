@@ -51,3 +51,5 @@ user_router.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+
+current_user = fastapi_users.current_user()

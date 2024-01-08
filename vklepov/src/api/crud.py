@@ -1,6 +1,6 @@
 """Data access wrappers."""
 from datetime import datetime
-from sqlalchemy import select
+from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import func
 
@@ -8,9 +8,7 @@ from . import models, schemas
 
 
 async def list_models(db: AsyncSession):
-    print("call list")
     res = await db.execute(select(models.LearnModel))
-    print("get res")
     return res.scalars().all()
 
 
@@ -22,29 +20,27 @@ def sync_models(db: AsyncSession):
     db.refresh(db_option)
 
 
-def get_balance(uid: int, db: AsyncSession):
-    raw_balance = (
-        db.query(models.BalanceDebit).filter(models.BalanceDebit.user_id == uid).first()
-    )
-    hold = (
-        db.query(func.sum(models.Job.cost))
-        .filter(
-            models.Job.status == schemas.JobStatus.pending, models.Job.user_id == uid
+async def get_balance(uid: int, db: AsyncSession):
+    debit = await db.execute(
+        select(func.sum(models.BalanceDebit.amount)).where(
+            models.BalanceDebit.user_id == uid
         )
-        .scalar()
     )
-    return raw_balance - hold
+    debit_sum = debit.scalar()
+
+    hold = await db.execute(
+        select(func.sum(models.Job.cost)).where(
+            models.Job.status != schemas.JobStatus.failed, models.Job.user_id == uid
+        )
+    )
+    credit_sum = hold.scalar()
+
+    return (debit_sum if debit_sum else 0) - (credit_sum if credit_sum else 0)
 
 
-def deposit_balance(uid: int, amount: int, db: AsyncSession):
-    balance = (
-        db.query(models.BalanceDebit).filter(models.BalanceDebit.user_id == uid).first()
-    )
-    if balance:
-        balance.amount += amount
-    else:
-        db.add(models.BalanceDebit(user_id=uid, amount=amount))
-    db.commit()
+async def deposit_balance(uid: int, amount: int, db: AsyncSession):
+    await db.execute(insert(models.BalanceDebit).values(user_id=uid, amount=amount))
+    await db.commit()
 
 
 def list_jobs(uid: int, db: AsyncSession):
