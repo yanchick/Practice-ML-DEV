@@ -1,16 +1,20 @@
 """Data access wrappers."""
 from datetime import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import func
 
 from . import models, schemas
 
 
-def list_models(db: Session):
-    return db.query(models.LearnModel).all()
+async def list_models(db: AsyncSession):
+    print("call list")
+    res = await db.execute(select(models.LearnModel))
+    print("get res")
+    return res.scalars().all()
 
 
-def sync_models(db: Session):
+def sync_models(db: AsyncSession):
     db.query(models.LearnModel).delete()
     db_option = models.LearnModel(description="Baseline model, 0.97 accuracy", cost=100)
     db.add(db_option)
@@ -18,7 +22,7 @@ def sync_models(db: Session):
     db.refresh(db_option)
 
 
-def get_balance(uid: int, db: Session):
+def get_balance(uid: int, db: AsyncSession):
     raw_balance = (
         db.query(models.BalanceDebit).filter(models.BalanceDebit.user_id == uid).first()
     )
@@ -32,7 +36,18 @@ def get_balance(uid: int, db: Session):
     return raw_balance - hold
 
 
-def list_jobs(uid: int, db: Session):
+def deposit_balance(uid: int, amount: int, db: AsyncSession):
+    balance = (
+        db.query(models.BalanceDebit).filter(models.BalanceDebit.user_id == uid).first()
+    )
+    if balance:
+        balance.amount += amount
+    else:
+        db.add(models.BalanceDebit(user_id=uid, amount=amount))
+    db.commit()
+
+
+def list_jobs(uid: int, db: AsyncSession):
     """List all jobs."""
     return (
         db.query(models.Job)
@@ -42,7 +57,7 @@ def list_jobs(uid: int, db: Session):
     )
 
 
-def get_job(uid: int, job_id: int, db: Session):
+def get_job(uid: int, job_id: int, db: AsyncSession):
     """Get job by id."""
     return (
         db.query(models.Job)
@@ -51,10 +66,10 @@ def get_job(uid: int, job_id: int, db: Session):
     )
 
 
-def start_job(user_id: int, model_id: int, db: Session):
+def start_job(user_id: int, model_id: int, db: AsyncSession):
     """Start job."""
 
-    model_cost = db.query(models.LearnModel).get(model_id).cost
+    model_cost = db.get(models.LearnModel, model_id).cost
     db_job = models.Job(
         user_id=user_id,
         status=schemas.JobStatus.pending,

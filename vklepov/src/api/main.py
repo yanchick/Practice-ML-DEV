@@ -1,44 +1,45 @@
 """FastAPI router module."""
 from fastapi import Depends, FastAPI
-from sqlalchemy.orm import Session
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from . import crud, schemas, database
+from . import crud, schemas, database, users
 
 app = FastAPI()
 app.add_middleware(GZipMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
+app.include_router(users.user_router)
 
-database.Base.metadata.create_all(bind=database.engine)
 
-
-def get_db():
-    """Connect to DB."""
-    db = database.SessionLocal()
-    try:
-        crud.sync_models(db)
-        yield db
-    finally:
-        db.close()
+# async def get_db():
+#     """Connect to DB."""
+#     async with database.get_async_session() as db:
+#         crud.sync_models(db)
+#         yield db
 
 
 @app.get("/models")
-async def list_models(db: Session = Depends(get_db)) -> list[schemas.LearnModel]:
+async def list_models(
+    db=Depends(database.get_async_session),
+) -> list[schemas.LearnModel]:
     """List available ML models"""
 
-    return crud.list_models(db)
+    return await crud.list_models(db)
 
 
 @app.get("/balance/{id}")
-async def get_balance(user_id: int, db: Session = Depends(get_db)) -> schemas.Balance:
+async def get_balance(
+    user_id: int, db=Depends(database.get_async_session)
+) -> schemas.Balance:
     """Get my balance."""
 
     return schemas.Balance(balance=crud.get_balance(user_id, db))
 
 
 @app.get("/jobs")
-async def list_jobs(user_id: int, db: Session = Depends(get_db)) -> list[schemas.Job]:
+async def list_jobs(
+    user_id: int, db=Depends(database.get_async_session)
+) -> list[schemas.Job]:
     """List my jobs."""
 
     return crud.list_jobs(user_id, db)
@@ -46,7 +47,7 @@ async def list_jobs(user_id: int, db: Session = Depends(get_db)) -> list[schemas
 
 @app.get("/jobs/{job_id}")
 async def get_job(
-    user_id: int, job_id: int, db: Session = Depends(get_db)
+    user_id: int, job_id: int, db=Depends(database.get_async_session)
 ) -> schemas.Job:
     """List my jobs."""
 
@@ -55,7 +56,7 @@ async def get_job(
 
 @app.post("/jobs")
 async def start_job(
-    user_id: int, job: schemas.JobCreate, db: Session = Depends(get_db)
+    user_id: int, job: schemas.JobCreate, db=Depends(database.get_async_session)
 ) -> schemas.Job:
     """Create a new job."""
 

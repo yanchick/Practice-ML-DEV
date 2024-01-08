@@ -3,6 +3,15 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from enum import IntEnum
+from fastapi_users import schemas
+
+
+class UserRead(schemas.BaseUser[int]):
+    pass
+
+
+class UserCreate(schemas.BaseUserCreate):
+    pass
 
 
 class Balance(BaseModel):
