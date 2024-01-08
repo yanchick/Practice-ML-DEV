@@ -1,6 +1,7 @@
 """API schema for ML app."""
 
 from pydantic import BaseModel, ConfigDict
+from typing import Optional
 from datetime import datetime
 from enum import IntEnum
 from fastapi_users import schemas
@@ -32,13 +33,19 @@ class JobStatus(IntEnum):
     failed = 3
 
 
-class Job(BaseModel):
+class JobShort(BaseModel):
     """Computation executed in the service."""
 
+    id: int
     status: JobStatus
     cost: int
     created_at: datetime
-    result: list[any]
+
+
+class Job(JobShort):
+    """Computation executed in the service, including result."""
+
+    result: Optional[list[any]]
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

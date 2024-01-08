@@ -34,25 +34,30 @@ async def deposit_balance(
 
 
 @router.get("/jobs")
-async def list_jobs(user_id: int, db=Depends(get_async_session)) -> list[schemas.Job]:
+async def list_jobs(
+    user=Depends(users.current_user), db=Depends(get_async_session)
+) -> list[schemas.JobShort]:
     """List my jobs."""
 
-    return crud.list_jobs(user_id, db)
+    return await crud.list_jobs(user.id, db)
 
 
 @router.get("/jobs/{job_id}")
 async def get_job(
-    user_id: int, job_id: int, db=Depends(get_async_session)
+    job_id: int, user=Depends(users.current_user), db=Depends(get_async_session)
 ) -> schemas.Job:
     """List my jobs."""
 
-    return crud.get_job(user_id, job_id, db)
+    return await crud.get_job(user.id, job_id, db)
 
 
 @router.post("/jobs")
 async def start_job(
-    user_id: int, job: schemas.JobCreate, db=Depends(get_async_session)
+    job: schemas.JobCreate,
+    user=Depends(users.current_user),
+    db=Depends(get_async_session),
 ) -> schemas.Job:
     """Create a new job."""
 
-    return crud.start_job(user_id, job.model_id, db)
+    job_id = await crud.start_job(user.id, job.model_id, db)
+    return await crud.get_job(user.id, job_id, db)

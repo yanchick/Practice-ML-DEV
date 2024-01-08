@@ -43,36 +43,42 @@ async def deposit_balance(uid: int, amount: int, db: AsyncSession):
     await db.commit()
 
 
-def list_jobs(uid: int, db: AsyncSession):
+async def list_jobs(uid: int, db: AsyncSession):
     """List all jobs."""
-    return (
-        db.query(models.Job)
-        .filter(models.Job.user_id == uid)
-        .with_entities(models.Job.id, models.Job.status)
+
+    res = await db.execute(
+        select(models.Job.id, models.Job.status, models.Job.cost, models.Job.created_at)
+        .where(models.Job.user_id == uid)
         .order_by(models.Job.created_at.desc())
     )
 
+    return res.all()
 
-def get_job(uid: int, job_id: int, db: AsyncSession):
+
+async def get_job(uid: int, job_id: int, db: AsyncSession):
     """Get job by id."""
-    return (
-        db.query(models.Job)
-        .filter(models.Job.id == job_id, models.Job.user_id == uid)
-        .first()
+    res = await db.execute(
+        select(models.Job).where(models.Job.id == job_id, models.Job.user_id == uid)
     )
 
+    return res.first()[0]
 
-def start_job(user_id: int, model_id: int, db: AsyncSession):
+
+async def start_job(user_id: int, model_id: int, db: AsyncSession):
     """Start job."""
 
-    model_cost = db.get(models.LearnModel, model_id).cost
-    db_job = models.Job(
-        user_id=user_id,
-        status=schemas.JobStatus.pending,
-        cost=model_cost,
-        created_at=datetime.now(),
+    ml_model = await db.get(models.LearnModel, model_id)
+    model_cost = ml_model.cost
+    stmt = (
+        insert(models.Job)
+        .values(
+            user_id=user_id,
+            status=schemas.JobStatus.pending,
+            cost=model_cost,
+            created_at=datetime.now(),
+        )
+        .returning(models.Job.id)
     )
-    db.add(db_job)
-    db.commit()
-    db.refresh(db_job)
-    return db_job
+    res = await db.execute(stmt)
+    await db.commit()
+    return res.scalar()
