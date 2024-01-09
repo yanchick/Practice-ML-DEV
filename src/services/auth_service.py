@@ -35,6 +35,7 @@ class AuthService(BaseService):
             name=found_user.name,
             is_superuser=found_user.is_superuser,
         )
+        #payload.__config__.from_attributes = True
         token_lifespan = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token, expiration_datetime = create_access_token(payload.dict(), token_lifespan)
         sign_in_result = {

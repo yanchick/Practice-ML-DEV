@@ -94,3 +94,6 @@ class BaseRepository:
                 raise NotFoundError(detail=f"not found id : {id}")
             session.delete(query)
             session.commit()
+    def get_all_models(self):
+        with self.session_factory() as session:
+            return session.query(self.model).all()
