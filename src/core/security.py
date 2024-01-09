@@ -5,8 +5,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import jwt
 from passlib.context import CryptContext
 
-from  core.config import configs
-from  core.exceptions import AuthError
+from core.config import configs
+from core.exceptions import AuthError
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ALGORITHM = "HS256"
@@ -33,7 +33,7 @@ def get_password_hash(password: str) -> str:
 
 def decode_jwt(token: str) -> dict:
     try:
-        decoded_token = jwt.decode(token, configs.SECRET_KEY, algorithms=ALGORITHM)
+        decoded_token = jwt.decode(token, configs.SECRET_KEY, algorithms=[ALGORITHM])
         return decoded_token if decoded_token["exp"] >= int(round(datetime.utcnow().timestamp())) else None
     except Exception as e:
         return {}
@@ -63,3 +63,4 @@ class JWTBearer(HTTPBearer):
         if payload:
             is_token_valid = True
         return is_token_valid
+
