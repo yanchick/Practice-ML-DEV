@@ -1,0 +1,352 @@
+openapi: 3.0.0
+info:
+  title: Billing service API
+  version: 1.0.0
+  description: API for buying predictions from machine learning models.
+
+paths:
+  /auth/sign-in:
+    post:
+      summary: Sign in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: Sign in successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInResponse'
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid request payload
+
+  /auth/sign-up:
+    post:
+      summary: Sign up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid request payload
+  /auth/me:
+    get:
+      summary: Get user information
+      security:
+        - JWTAuthorization: []
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+  
+
+  /models/info:
+    get:
+      summary: Get available models
+      responses:
+        '200':
+          description: List of available models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelInfo'
+
+  /transactions/balance:
+    get:
+      summary: Get user's balance
+      security:
+        - JWTAuthorization: []
+      responses:
+        '200':
+          description: User's balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        '401':
+          description: Unauthorized
+
+  /transactions/history:
+    get:
+      summary: Get user's transaction history
+      security:
+        - JWTAuthorization: []
+      responses:
+        '200':
+          description: User's transaction history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        '401':
+          description: Unauthorized
+
+  /predictor/run_prediction:
+    post:
+      summary: Run a machine learning model
+      security:
+        - JWTAuthorization: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelRequest'
+      responses:
+        '200':
+          description: Model executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelOutput'
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid request payload
+        '402':
+          description: Insufficient funds
+
+  /predictor/choose_model:
+    post:
+      summary: Choose a machine learning model for prediction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChooseModelRequest'
+      responses:
+        '200':
+          description: Model chosen successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid request payload
+
+  /predictor/upload-data:
+    post:
+      summary: Upload data for prediction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadDataRequest'
+      responses:
+        '200':
+          description: Data uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  prediction_id:
+                    type: string
+                    description: Prediction ID for checking prediction status
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid request payload
+
+  /predictor/get-prediction-result/{prediction_id}:
+    get:
+      summary: Get prediction result by prediction ID
+      parameters:
+        - name: prediction_id
+          in: path
+          required: true
+          description: Prediction ID obtained from the upload-data response
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Prediction result retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResult'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Prediction result not found
+
+components:
+  securitySchemes:
+    JWTAuthorization:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    UserCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    SignInResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Access token for authentication
+
+    User:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        login:
+          type: string
+        email:
+          type: string
+        last_sign_in:
+          type: string
+          format: date-time
+        balance:
+          type: number
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+
+
+    ModelInfo:
+      type: object
+      properties:
+        model_id:
+          type: integer
+        description:
+          type: string
+        price:
+          type: number
+
+    Balance:
+      type: object
+      properties:
+        balance:
+          type: number
+
+    Transaction:
+      type: object
+      properties:
+        transaction_id:
+          type: integer
+        amount:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    ModelRequest:
+      type: object
+      properties:
+        input_data:
+          type: object
+          properties:
+            PAQ605:
+              type: number
+            BMXBMI:
+              type: number
+            LBXGLU:
+              type: number
+            DIQ010:
+              type: number
+            LBXGLT:
+              type: number
+            LBXIN:
+              type: number
+          required:
+            - PAQ605
+            - BMXBMI
+            - LBXGLU
+            - DIQ010
+            - LBXGLT
+            - LBXIN
+      required:
+        - input_data
+
+    ChooseModelRequest:
+      type: object
+      properties:
+        model_id:
+          type: integer
+    
+
+
+
+    UploadDataRequest:
+      type: object
+      properties:
+        model_id:
+          type: integer
+        data:
+          type: object
+          properties:
+            RIAGENDR:
+              type: number
+            PAQ605:
+              type: number
+            BMXBMI:
+              type: number
+            LBXGLU:
+              type: number
+            DIQ010:
+              type: number
+            LBXGLT:
+              type: number
+            LBXIN:
+              type: number
+        
+          required:
+            - RIAGENDR
+            - PAQ605
+            - BMXBMI
+            - LBXGLU
+            - DIQ010
+            - LBXGLT
+            - LBXIN
+      required:
+        - model_id
+        - data
+
+
+
+    PredictionResult:
+      type: object
+      properties:
+        age_group:
+          type: string
+          description: Predicted age group by the model
+      required:
+        - age_group
