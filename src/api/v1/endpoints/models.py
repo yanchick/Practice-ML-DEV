@@ -15,7 +15,7 @@ def get_user_repository():
 @router.get("/info", response_model=list[ModelInfo])
 async def get_available_models(user_repository: UserRepository = Depends(get_user_repository)):
     models = user_repository.get_all_models()
-    return models
+    return [{"modelid": model.modelid, "description": model.description, "price": model.price} for model in models]
 
 
 @router.get("/balance", response_model=Balance)

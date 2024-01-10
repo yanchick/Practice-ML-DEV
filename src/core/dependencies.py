@@ -1,15 +1,18 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends
+from sqlalchemy.orm import Session
 from jose import jwt
 from pydantic import ValidationError
-
+from services.model_service import ModelService
 from  core.config import configs
 from  core.container import Container
 from  core.exceptions import AuthError
 from  core.security import ALGORITHM, JWTBearer
+from core.database import get_session
 from  model.user import User
 from  schema.auth_schema import Payload
 from  services.user_service import UserService
+from repository.user_repository import UserRepository
 
 
 @inject
@@ -55,3 +58,10 @@ def get_current_super_user(current_user: User = Depends(get_current_user)) -> Us
     if not current_user.is_superuser:
         raise AuthError("It's not a super user")
     return current_user
+
+def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
+    return UserRepository(session)
+def get_model_service(
+    user_repository: UserRepository = Depends(get_user_repository)
+) -> ModelService:
+    return ModelService(user_repository=user_repository)

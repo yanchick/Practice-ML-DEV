@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from  core.config import configs
 from  core.exceptions import DuplicatedError, NotFoundError
 from  util.query_builder import dict_to_sqlalchemy_filter_options
+from model.base_model import Model
 
 
 class BaseRepository:

@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
 class Transaction(BaseModel):
     transaction_id: int
     amount: float

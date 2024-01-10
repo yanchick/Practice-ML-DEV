@@ -13,11 +13,11 @@ class UserRepository(BaseRepository):
         self.session_factory = session_factory
         super().__init__(session_factory, User)
 
-    def get_session(self) -> AbstractContextManager[Session]:
+    def get_session(self) -> Session:
         """
         Get a new session from the session factory.
         """
-        return self.session_factory()
+        return self.session_factory().__enter__()
 
     def create(self, user: User) -> User:
         """
@@ -40,3 +40,21 @@ class UserRepository(BaseRepository):
             # Assuming you have a relationship between User and Transaction models
             return user.transactions
 
+    def commit(self):
+        pass
+
+    def choose_model(self, user: User, model_id: int):
+        # Use self.get_session().query here
+        model = self.get_session().query(Model).filter(Model.id == model_id).first()
+        if not model:
+            raise ValidationError(detail=f"Model with id {model_id} does not exist")
+
+        # Update the user's chosen model
+        user.chosen_model_id = model_id
+
+        try:
+            # Commit the user update to the database
+            self.commit()
+        except Exception as e:
+            # Handle any errors that occur during the commit
+            raise ValidationError(detail="Failed to choose the model") from e

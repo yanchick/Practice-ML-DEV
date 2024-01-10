@@ -29,10 +29,10 @@ class Database:
             ),
         )
 
-    #def create_database(self) -> None:
-        #User.metadata.create_all(self._engine)
-        #Transaction.metadata.create_all(self._engine)
-        #Model.metadata.create_all(self._engine)
+    def create_database(self) -> None:
+        User.metadata.create_all(self._engine)
+        Transaction.metadata.create_all(self._engine)
+        Model.metadata.create_all(self._engine)
 
 
     @contextmanager
@@ -46,6 +46,7 @@ class Database:
         finally:
             session.close()
 
+
 def init_db():
     # Create an instance of the Database class
     db = Database(configs.DATABASE_URI)
@@ -58,3 +59,16 @@ def init_db():
 #if __name__ == "__main__":
     # Run init_db when this script is executed directly
     #init_db()
+# core/database.py
+
+# ... (previous code)
+
+@contextmanager
+def get_session() -> AbstractContextManager[Session]:
+    db = Database(configs.DATABASE_URI)
+    try:
+        yield db
+    finally:
+        db.close()
+
+# ... (remaining code)

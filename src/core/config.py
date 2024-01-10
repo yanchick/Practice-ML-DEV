@@ -39,7 +39,7 @@ class Configs(BaseSettings):
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_HOST: str = os.getenv("DB_HOST")
     DB_PORT: str = os.getenv("DB_PORT", "3306")
-    DB_FILE: str = os.getenv("DB_FILE", "../mydatabase.db")
+    DB_FILE: str = os.getenv("DB_FILE", "temp.db")
     DB_ENGINE: str = DB_ENGINE_MAPPER.get(DB, "sqlite")
 
     if DB_ENGINE == "postgresql":

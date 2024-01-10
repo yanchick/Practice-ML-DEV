@@ -17,14 +17,14 @@ class Transaction(Base):
     datetime = Column(DateTime, default=datetime.utcnow)
     #user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
     amount = Column(Float, nullable=False)
-    model_id = Column(Integer, ForeignKey('models.model_id'), nullable=False)
+    modelid = Column(Integer, ForeignKey('models.modelid'), nullable=False)
     status = Column(String)  
     user = relationship('User', back_populates='transactions')
     prediction = relationship('Prediction', uselist=False, back_populates='transaction')
 
 class Model(Base):
     __tablename__ = 'models'
-    model_id = Column(Integer, primary_key=True)
+    modelid = Column(Integer, primary_key=True)
     description = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     pickle_file_path = Column(String, nullable=False)

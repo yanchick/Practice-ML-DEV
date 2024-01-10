@@ -16,7 +16,6 @@ class ChooseModelRequest(BaseModel):
         model_config = {'protected_namespaces': ()}
 
 class UploadDataRequest(BaseModel):
-    modelid: int
     data: Dict[str, Any]
 
     class Config:

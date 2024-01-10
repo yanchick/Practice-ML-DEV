@@ -7,15 +7,19 @@ from core.exceptions import ValidationError
 from core.security import verify_password
 from services.predict_service import PredictService
 from core.exceptions import DuplicatedError
+from repository.model_repository import ModelRepository
+from repository.user_repository import UserRepository
 
 class BillingService:
     def __init__(
         self,
-        user_repository,
+        user_repository: UserRepository,
         predict_service: PredictService,
+        model_repository: ModelRepository
     ):
         self.user_repository = user_repository
         self.predict_service = predict_service
+        self.model_repository = model_repository
 
     def purchase_model(self, user: User, model_name: str):
         model_tokens_mapping = {
@@ -72,4 +76,22 @@ class BillingService:
     def get_user_transaction_history(self, user: User) -> List[TransactionSchema]:
         transactions = self.user_repository.get_transactions_by_user(user.user_id)
         return [TransactionSchema(transaction_id=transaction.id, amount=transaction.amount, timestamp=transaction.timestamp) for transaction in transactions]
+
+    def choose_model(self, user: User, modelid: int):
+        # Check if the model exists
+        model = self.model_repository.get_model_by_id(modelid)
+        if not model:
+            raise ValidationError(detail=f"Model with id {modelid} does not exist")
+
+        # Update the user's chosen model
+        user.chosen_model_id = modelid
+
+        try:
+            # Commit the user update to the database
+            self.user_repository.commit()
+        except Exception as e:
+            # Handle any errors that occur during the commit
+            raise ValidationError(detail="Failed to choose the model") from e
+
+
 

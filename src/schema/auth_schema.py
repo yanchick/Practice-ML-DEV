@@ -22,9 +22,10 @@ class Payload(BaseModel):
     name: str
     is_superuser: bool
 
-    #class Config:
-        #arbitrary_types_allowed = True
-        #from_attributes = True
+    class Config:
+        arbitrary_types_allowed = True
+        from_attributes = True
+        model_config = {'protected_namespaces': ()}
 
 
 class SignInResponse(BaseModel):

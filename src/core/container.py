@@ -25,4 +25,3 @@ class Container(containers.DeclarativeContainer):
     predict_service = providers.Factory(PredictService)
 
     billing_service = providers.Factory(BillingService, user_repository=user_repository, predict_service=predict_service)
-
