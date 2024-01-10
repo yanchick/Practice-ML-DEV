@@ -18,5 +18,7 @@ async_engine = create_async_engine(f'sqlite+aiosqlite:///{DB_ADDRESS}')
 async_session_maker = async_sessionmaker(async_engine, expire_on_commit=False)
 
 
-def init_db(engine=sync_engine):
+def init_db(engine=sync_engine, drop_all=False):
+    if drop_all:
+        Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)

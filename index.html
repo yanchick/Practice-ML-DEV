@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Auth Example</title>
+</head>
+<body>
+
+    <h1>FastAPI Auth Example</h1>
+
+    <!-- Login Form -->
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label for="loginUsername">Username:</label>
+        <input type="text" id="loginUsername" name="loginUsername" required>
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" name="loginPassword" required>
+        <button type="button" onclick="login()">Login</button>
+    </form>
+
+    <!-- Register Form -->
+    <h2>Register</h2>
+    <form id="registerForm">
+        <label for="registerName">Name:</label>
+        <input type="text" id="registerName" name="registerName" required>
+        <label for="registerEmail">Email:</label>
+        <input type="email" id="registerEmail" name="registerEmail" required>
+        <label for="registerPassword">Password:</label>
+        <input type="password" id="registerPassword" name="registerPassword" required>
+        <button type="button" onclick="register()">Register</button>
+    </form>
+
+    <!-- Get Me Button -->
+    <h2>User Info</h2>
+    <button type="button" onclick="getUserInfo()">Get Me</button>
+
+    <script>
+        let accessToken;  // Variable to store the access token
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const response = await fetch('http://localhost:7999/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: username,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            accessToken = data.access_token;  // Save the access token
+
+            alert('Successfully logged in!');
+            console.log(data);
+        }
+
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            const response = await fetch('http://localhost:7999/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            accessToken = data.access_token;  // Save the access token
+
+            alert('Successfully registered!');
+            console.log(data);
+        }
+
+        async function getUserInfo() {
+            const response = await fetch('http://localhost:7999/api/auth/me', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+            console.log(data);
+        }
+    </script>
+
+</body>
+</html>

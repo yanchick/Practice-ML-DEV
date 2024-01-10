@@ -27,13 +27,13 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await session.execute(stmt)
             await session.commit()
             return res.scalar_one()
-
+    
     async def find_by_options(self, unique: bool = False, **kwargs):
         async with async_session_maker() as session:
             stmt = select(self.model).filter_by(**kwargs)
             results = await session.execute(stmt)
             if unique:
-                results = results.one_or_none()[0]
+                results = results.scalar_one_or_none()
             else:
-                results = [res[0] for res in results.all()]
+                results = results.scalars().all()
             return results

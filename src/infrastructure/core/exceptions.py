@@ -8,6 +8,11 @@ class DuplicatedError(HTTPException):
         super().__init__(status.HTTP_400_BAD_REQUEST, detail, headers)
 
 
+class CredentialsError(HTTPException):
+    def __init__(self, detail: Any = None, headers: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(status.HTTP_401_UNAUTHORIZED, detail, headers)
+
+
 class AuthError(HTTPException):
     def __init__(self, detail: Any = None, headers: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(status.HTTP_403_FORBIDDEN, detail, headers)

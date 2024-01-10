@@ -20,7 +20,7 @@ async def login(user_info: UserLogin, service: Annotated[AuthService, Depends(ge
     response = await service.login(user_info)
     return response
 
-@router.post("/register", response_model=User)
+@router.post("/register", response_model=UserLoginResponse)
 @inject
 async def register(user_info: UserRegister, service: Annotated[AuthService, Depends(get_auth_service)]):
     response = await service.register(user_info)
@@ -29,5 +29,4 @@ async def register(user_info: UserRegister, service: Annotated[AuthService, Depe
 
 @router.get("/me", response_model=User)
 async def get_me(current_user: User = Depends(get_current_user)):
-    """Test function to check dependancy injection"""
     return current_user

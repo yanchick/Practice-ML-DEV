@@ -11,7 +11,7 @@ class Users(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String)
-    password_salt = Column(String)
+    password = Column(String)
     balance = Column(Integer, default=500)
 
     def __repr__(self):
@@ -19,7 +19,7 @@ class Users(Base):
         Get set: {name, email, password (salt)}
         :returns: Set
         """
-        return self.id, self.name, self.email, self.password_salt, self.balance
+        return self.id, self.name, self.email, self.password, self.balance
 
 
 class Bills(Base):
