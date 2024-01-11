@@ -30,6 +30,6 @@ async def get_session() -> AsyncSession:
         yield session
 
 
-async def get_session_maker() -> AsyncSession:
+async def get_session_maker() -> async_sessionmaker:
     session_maker = SessionManager().get_session_maker()
-    return session_maker()
+    return session_maker

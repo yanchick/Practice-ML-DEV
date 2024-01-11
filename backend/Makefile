@@ -30,6 +30,10 @@ database:
 redis:
 	docker compose up redis -d
 
+.PHONY: worker
+worker:
+	docker compose up worker -d
+
 .PHONY: test
 test:
 	poetry run pytest --cov=app --cov-report=html

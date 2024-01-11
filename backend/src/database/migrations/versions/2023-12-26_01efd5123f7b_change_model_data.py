@@ -57,10 +57,15 @@ def upgrade() -> None:
         (2, "logreg_tfidf", "Logreg + TfIdf", 2.0),
         (3, "catboost", "Catboost", 3.0),
     ]
-    op.bulk_insert(
-        models_table,
-        [{"id": id, "name": name, "description": description, "cost": cost} for id, name, description, cost in models],
-    )
+    # select data
+
+    conn = op.get_bind()
+    res = conn.execute(sa.select(models_table)).fetchall()
+    if len(res) == 0:
+        op.bulk_insert(
+            models_table,
+            [{"id": id, "name": name, "description": description, "cost": cost} for id, name, description, cost in models],
+        )
 
     prediction_classes = [
         (2612, "Mobile Phones"),
@@ -74,7 +79,9 @@ def upgrade() -> None:
         (2622, "Fridge Freezers"),
         (2623, "Fridges"),
     ]
-    op.bulk_insert(prediction_class_table, [{"id": id_, "name": name} for id_, name in prediction_classes])
+    res = conn.execute(sa.select(prediction_class_table)).fetchall()
+    if len(res) == 0:
+        op.bulk_insert(prediction_class_table, [{"id": id_, "name": name} for id_, name in prediction_classes])
 
 
 def downgrade() -> None:

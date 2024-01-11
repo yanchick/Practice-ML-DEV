@@ -58,3 +58,10 @@ class Settings(BaseSettings):
         return "postgresql://{user}:{password}@{host}:{port}/{database}".format(
             **self.database_settings,
         )
+
+    @property
+    def redis_url(self) -> str:
+        """
+        Get uri for connection with redis.
+        """
+        return f"redis://:{self.redis_password}@{self.redis_host}:{self.redis_port}/0"

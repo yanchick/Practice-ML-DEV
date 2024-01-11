@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /db/:/var/lib/postgresql/data
+      - ./db/:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -33,6 +33,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  worker:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - redis
+    environment:
+      POSTGRES_HOST: database
+      REDIS_HOST: redis
+    command: rq worker --with-scheduler --url redis://:${REDIS_PASSWORD}@${REDIS_HOST}:6379/0
 
 #  migrate_db:
 #    build: .

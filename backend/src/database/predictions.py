@@ -11,7 +11,7 @@ class PredictionClass(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
-    predictions: Mapped["Prediction"] = relationship("Prediction", back_populates="predicted_class")
+    predictions: Mapped[list["Prediction"]] = relationship("Prediction", back_populates="predicted_class")
 
 
 class Prediction(Base):
@@ -22,5 +22,5 @@ class Prediction(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
     user: Mapped[User] = relationship("User", back_populates="predictions")
     input_data: Mapped[str] = mapped_column(nullable=False)
-    predicted_class_id: Mapped[int] = mapped_column(ForeignKey("prediction.id"), nullable=True)
+    predicted_class_id: Mapped[int|None] = mapped_column(ForeignKey("prediction_class.id"), nullable=True)
     predicted_class: Mapped[PredictionClass] = relationship("PredictionClass", back_populates="predictions")

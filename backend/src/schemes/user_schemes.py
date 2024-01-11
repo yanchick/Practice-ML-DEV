@@ -17,7 +17,7 @@ class UserScheme(BaseModel):
 
 
 class PredictionItem(BaseModel):
-    result: float
+    result: str
 
 
 class PredictionScheme(BaseModel):

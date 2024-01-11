@@ -1,10 +1,8 @@
-from pydantic import BaseModel
+from enum import Enum
 
 
-class PredictionRequestItem(BaseModel):
-    name: str
-
-
-class PredictionRequest(BaseModel):
-    predictions: list[PredictionRequestItem]
-    model_id: int
+class AvailableModels(str, Enum):
+    naive = "naive"
+    linear = "linear"
+    tree = "tree"
+    dummy = "dummy"
