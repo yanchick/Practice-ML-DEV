@@ -1,6 +1,7 @@
-from src.database import Model
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.database.model import Model
 
 
 class ModelRepository:
@@ -20,4 +21,4 @@ class ModelRepository:
     async def get_all_models(session: AsyncSession) -> list[Model] | None:
         query = select(Model)
         result = (await session.scalars(query)).all()
-        return result
+        return result  # type: ignore[return-value]

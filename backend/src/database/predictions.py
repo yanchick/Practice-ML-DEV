@@ -29,4 +29,7 @@ class Prediction(Base):
     predicted_class: Mapped[PredictionClass] = relationship("PredictionClass", back_populates="predictions")
 
     def __repr__(self) -> str:
-        return f"<Prediction(id={self.id}, model_id={self.model_id}, user_id={self.user_id}, input_data={self.input_data}, predicted_class_id={self.predicted_class_id})>"
+        return (
+            f"<Prediction(id={self.id}, model_id={self.model_id}, "
+            f"user_id={self.user_id}, input_data={self.input_data}, predicted_class_id={self.predicted_class_id})>"
+        )

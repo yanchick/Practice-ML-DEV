@@ -1,10 +1,9 @@
+import catboost
+import joblib
 import pandas as pd
 
 from src.database.session_manager import get_session_maker
 from src.repository.predictions import PredictionRepository
-import joblib
-import catboost
-import os
 
 
 async def save_prediction(results: list[int], prediction_ids: list[int]) -> None:

@@ -18,4 +18,7 @@ class Model(Base):
     predictions: Mapped[list["Prediction"]] = relationship("Prediction", back_populates="model")
 
     def __repr__(self) -> str:
-        return f"<Model(id={self.id}, name={self.name}, cost={self.cost}, description={self.description}, is_active={self.is_active})>"
+        return (
+            f"<Model(id={self.id}, name={self.name}, "
+            f"cost={self.cost}, description={self.description}, is_active={self.is_active})>"
+        )
