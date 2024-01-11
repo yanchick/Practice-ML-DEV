@@ -1,6 +1,9 @@
-from sqlalchemy import select
+from sqlalchemy import update
+
+from sqlalchemy import select, cast, Integer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.database import Model
 from src.database.user import User
 
 
@@ -17,3 +20,8 @@ class UserRepository:
         session.add(user)
         await session.commit()
         return user
+
+    @staticmethod
+    async def subtract_money(user_id: int, cost: int, session: AsyncSession) -> None:
+        await session.execute(update(User).where(User.id == user_id).values(balance=User.balance - cost))
+        await session.commit()

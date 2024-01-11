@@ -16,3 +16,6 @@ class Model(Base):
     description: Mapped[str]
     is_active: Mapped[bool] = mapped_column(default=True)
     predictions: Mapped[list["Prediction"]] = relationship("Prediction", back_populates="model")
+
+    def __repr__(self) -> str:
+        return f"<Model(id={self.id}, name={self.name}, cost={self.cost}, description={self.description}, is_active={self.is_active})>"

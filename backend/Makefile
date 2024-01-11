@@ -32,7 +32,7 @@ redis:
 
 .PHONY: worker
 worker:
-	docker compose up worker -d
+	docker compose up worker -d --build
 
 .PHONY: test
 test:

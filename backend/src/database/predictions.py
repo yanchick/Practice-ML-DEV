@@ -13,6 +13,9 @@ class PredictionClass(Base):
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     predictions: Mapped[list["Prediction"]] = relationship("Prediction", back_populates="predicted_class")
 
+    def __repr__(self) -> str:
+        return f"<PredictionClass(id={self.id}, name={self.name})>"
+
 
 class Prediction(Base):
     __tablename__ = "prediction"
@@ -24,3 +27,6 @@ class Prediction(Base):
     input_data: Mapped[str] = mapped_column(nullable=False)
     predicted_class_id: Mapped[int | None] = mapped_column(ForeignKey("prediction_class.id"), nullable=True)
     predicted_class: Mapped[PredictionClass] = relationship("PredictionClass", back_populates="predictions")
+
+    def __repr__(self) -> str:
+        return f"<Prediction(id={self.id}, model_id={self.model_id}, user_id={self.user_id}, input_data={self.input_data}, predicted_class_id={self.predicted_class_id})>"

@@ -56,3 +56,16 @@ services:
 #    environment:
 #      POSTGRES_HOST: database
 #    command: ["python", "-m", "alembic", "upgrade", "head"]
+
+  api:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - redis
+    environment:
+      POSTGRES_HOST: database
+      REDIS_HOST: redis
+    ports:
+      - "8000:8000"

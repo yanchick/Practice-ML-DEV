@@ -4,5 +4,5 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 WORKDIR /app
 COPY . .
-
-CMD ["python", "main.py"]
+ENV PYTHONPATH "${PYTHONPATH}:/app"
+CMD ["python", "src/main.py"]

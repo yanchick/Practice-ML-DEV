@@ -1,3 +1,5 @@
+from sqlalchemy import update
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,8 +10,8 @@ class PredictionRepository:
     @staticmethod
     async def get_predictions_by_user_id(user_id: int, session: AsyncSession) -> list[Prediction] | None:
         query = select(Prediction).where(Prediction.user_id == user_id)
-        result = await session.scalars(query)
-        return result  # type: ignore[return-value]
+        result = (await session.scalars(query)).all()
+        return result
 
     @staticmethod
     async def create_predictions(
@@ -23,11 +25,11 @@ class PredictionRepository:
         return predictions
 
     @staticmethod
-    async def update_prediction(prediction_id: int, predicted_class: int, session: AsyncSession) -> Prediction:
-        prediction = await session.get_one(Prediction, prediction_id)
-        prediction.predicted_class_id = predicted_class
+    async def update_prediction(prediction_ids: list[int], predicted_classes: list[int], session: AsyncSession) -> None:
+        for prediction_id, predicted_class in zip(prediction_ids, predicted_classes):
+            query = update(Prediction).where(Prediction.id == prediction_id).values(predicted_class_id=predicted_class)
+            await session.execute(query)
         await session.commit()
-        return prediction
 
     @staticmethod
     async def get_prediction_by_id(prediction_id: int, session: AsyncSession) -> Prediction:

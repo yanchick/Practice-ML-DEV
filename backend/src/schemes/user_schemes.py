@@ -17,7 +17,10 @@ class UserScheme(BaseModel):
 
 
 class PredictionItem(BaseModel):
-    result: str
+    id: int
+    predicted_model_id: int
+    result: int | None
+    input_data: str
 
 
 class PredictionScheme(BaseModel):

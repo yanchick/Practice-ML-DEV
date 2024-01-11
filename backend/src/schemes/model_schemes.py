@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class AvailableModels(str, Enum):
-    naive = "naive"
-    linear = "linear"
-    tree = "tree"
-    dummy = "dummy"
+    base = "base"
+    logreg_tfidf = "logreg_tfidf"
+    catboost = "catboost"

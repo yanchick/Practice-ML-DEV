@@ -13,7 +13,7 @@ class User(Base):
 
     username: Mapped[str] = mapped_column(unique=True, index=True)
     password: Mapped[str]
-    balance: Mapped[float] = mapped_column(default=0.0)
+    balance: Mapped[float] = mapped_column(default=100.0)
     is_active: Mapped[bool] = mapped_column(default=True)
     is_superuser: Mapped[bool] = mapped_column(default=False)
     predictions: Mapped[list["Prediction"]] = relationship("Prediction", back_populates="user")
