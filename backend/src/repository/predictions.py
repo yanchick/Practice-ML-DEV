@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import Prediction
+from src.database.predictions import Prediction
 
 
 class PredictionRepository:
@@ -9,11 +9,15 @@ class PredictionRepository:
     async def get_predictions_by_user_id(user_id: int, session: AsyncSession) -> list[Prediction] | None:
         query = select(Prediction).where(Prediction.user_id == user_id)
         result = await session.scalars(query)
-        return result
+        return result  # type: ignore[return-value]
 
     @staticmethod
-    async def create_predictions(user_id: int, model_id: int, data: list[str], session: AsyncSession) -> list[Prediction]:
-        predictions = [Prediction(user_id=user_id, model_id=model_id, input_data=prediction_data) for prediction_data in data]
+    async def create_predictions(
+        user_id: int, model_id: int, data: list[str], session: AsyncSession
+    ) -> list[Prediction]:
+        predictions = [
+            Prediction(user_id=user_id, model_id=model_id, input_data=prediction_data) for prediction_data in data
+        ]
         session.add_all(predictions)
         await session.commit()
         return predictions

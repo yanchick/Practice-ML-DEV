@@ -24,6 +24,16 @@ rq = "^1.15.1"
 mypy = "^1.7.1"
 ruff = "^0.1.7"
 
+
+[tool.poetry.group.mypy.dependencies]
+types-pyyaml = "^6.0.12.12"
+types-pygments = "^2.17.0.20240106"
+types-passlib = "^1.7.7.20240106"
+types-python-dateutil = "^2.8.19.20240106"
+types-python-jose = "^3.3.4.20240106"
+types-redis = "^4.6.0.20240106"
+types-ujson = "^5.9.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -41,6 +51,9 @@ extend-select= [
 fix = true
 target-version = "py310"
 line-length = 120
+
+[tool.ruff.per-file-ignores]
+'__init__.py' = ['F405', 'F403', 'F401', 'D']
 
 [tool.mypy]
 python_version = "3.10"

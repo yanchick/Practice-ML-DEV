@@ -1,8 +1,7 @@
 from typing import Any
 
-from pydantic import Field
+from pydantic import Field, IPvAnyAddress
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import IPvAnyAddress
 
 
 class Settings(BaseSettings):
@@ -25,7 +24,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=60 * 24 * 3)  # default 3 days
 
     debug: bool = Field(default=False)
-    host: IPvAnyAddress = Field(default="0.0.0.0")
+    host: IPvAnyAddress = Field(default=IPvAnyAddress('127.0.0.1'))
     port: int = Field(default=8000)
 
     @property

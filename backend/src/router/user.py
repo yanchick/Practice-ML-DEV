@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 
 from src.auth import CurrentUser, authenticate_user, create_access_token, get_password_hash
 from src.repository.user import UserRepository
-from src.schemes.router import AuthFormData, Session, OpenAPIResponses
-from src.schemes.user_schemes import SingUpRequest, UserScheme, Token
+from src.schemes.router import AuthFormData, OpenAPIResponses, Session
+from src.schemes.user_schemes import SingUpRequest, Token, UserScheme
 
 router = APIRouter(prefix="/user", tags=["user"])
 

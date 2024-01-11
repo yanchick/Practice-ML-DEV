@@ -1,9 +1,10 @@
 from enum import Enum
 from typing import Annotated
 
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.database.session_manager import get_session
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/user/login")
@@ -13,8 +14,8 @@ Session = Annotated[AsyncSession, Depends(get_session)]
 AuthFormData = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
-class OpenAPIResponses(dict, Enum):
-    HTTP_401_UNAUTHORIZED = {
+class OpenAPIResponses(dict, Enum):  # type: ignore
+    HTTP_401_UNAUTHORIZED = {  # noqa: RUF012
         401: {
             "description": "Unauthorized",
             "content": {
@@ -29,7 +30,7 @@ class OpenAPIResponses(dict, Enum):
         }
     }
 
-    HTTP_400_BAD_REQUEST = {
+    HTTP_400_BAD_REQUEST = {  # noqa: RUF012
         400: {
             "description": "Bad Request",
             "content": {
@@ -43,7 +44,7 @@ class OpenAPIResponses(dict, Enum):
         }
     }
 
-    HTTP_422_UNPROCESSABLE_ENTITY = {
+    HTTP_422_UNPROCESSABLE_ENTITY = {  # noqa: RUF012
         422: {
             "description": "Unprocessable Entity",
             "content": {

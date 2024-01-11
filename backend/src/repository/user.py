@@ -6,7 +6,7 @@ from src.database.user import User
 
 class UserRepository:
     @staticmethod
-    async def get_user_by_username(username: str, session: AsyncSession) -> User:
+    async def get_user_by_username(username: str, session: AsyncSession) -> User | None:
         query = select(User).where(User.username == username)
         result = (await session.scalars(query)).first()
         return result

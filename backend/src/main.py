@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.router import model_router, predictions_router, user_router
-from src.settings import Settings
+from src.router import model_router, predictions_router, user_router  # type: ignore[attr-defined]
 from src.schemes.router import OpenAPIResponses
+from src.settings import Settings
 
 v1_prefix = "/v1"
 
