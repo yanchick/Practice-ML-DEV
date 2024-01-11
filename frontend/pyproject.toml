@@ -1,0 +1,58 @@
+[project]
+name = "frontend"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Roman Solomatin", email = "36135455+Samoed@users.noreply.github.com"},
+]
+dependencies = [
+    "dash>=2.14.2",
+    "pandas>=2.1.4",
+    "dash-bootstrap-components>=1.5.0",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.8.0",
+    "ruff>=0.1.11",
+    "openapi-python-client>=0.17.1",
+]
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+package-type = "library"
+[tool.ruff]
+extend-select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "RUF", # ruff
+]
+fix = true
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_redundant_casts = true
+# plugins = ["numpy.typing.mypy_plugin"]
+
+[[tool.mypy.overrides]]
+module = [
+    "scipy",
+    "sklearn",
+]
+ignore_missing_imports = true
