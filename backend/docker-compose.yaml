@@ -46,26 +46,33 @@ services:
       REDIS_HOST: redis
     command: rq worker --with-scheduler --url redis://:${REDIS_PASSWORD}@${REDIS_HOST}:6379/0
 
-#  migrate_db:
-#    build: .
-#    env_file:
-#      - .env
-#    depends_on:
-#      database:
-#        condition: service_healthy
-#    environment:
-#      POSTGRES_HOST: database
-#    command: ["python", "-m", "alembic", "upgrade", "head"]
+  migrate_db:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: database
+    command: ["alembic", "upgrade", "head"]
 
   api:
     build: .
     env_file:
       - .env
     depends_on:
-      - database
-      - redis
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      worker:
+        condition: service_started
+      migrate_db:
+        condition: service_completed_successfully
     environment:
       POSTGRES_HOST: database
       REDIS_HOST: redis
+      HOST: "0.0.0.0"
     ports:
       - "8000:8000"
