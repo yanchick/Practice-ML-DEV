@@ -1,0 +1,87 @@
+services:
+  database:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./db/:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7.2
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./redis-data:/data
+    command: redis-server --save 60 1 --requirepass ${REDIS_PASSWORD}
+    expose:
+      - 6379:6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build: backend
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - redis
+    environment:
+      POSTGRES_HOST: database
+      REDIS_HOST: redis
+    command: rq worker --with-scheduler --url redis://:${REDIS_PASSWORD}@${REDIS_HOST}:6379/0
+
+  migrate_db:
+    build: backend
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: database
+    command: ["alembic", "upgrade", "head"]
+
+  api:
+    build: backend
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      worker:
+        condition: service_started
+      migrate_db:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_HOST: database
+      REDIS_HOST: redis
+      HOST: "0.0.0.0"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: frontend
+    depends_on:
+      - api
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "8050:8050"

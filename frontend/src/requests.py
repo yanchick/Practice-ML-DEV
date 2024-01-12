@@ -3,7 +3,7 @@ from src.api_client import AuthenticatedClient, Client
 from src.api_client.models import (
     AvailableModels,
     BodyLoginV1UserLoginPost,
-    ModelListScheme,
+    ModelScheme,
     PredictionScheme,
     RequestPrediction,
     SingUpRequest,
@@ -39,7 +39,7 @@ class Requests:
             return False
 
     def signup(self, username: str, password: str) -> bool:
-        with AuthenticatedClient(base_url=self.settings.api_url, token=self.token) as client:
+        with Client(base_url=self.settings.api_url) as client:
             response = api_client.user.signup(client=client, body=SingUpRequest(username=username, password=password))
             if response.status_code == 200 and response.parsed is not None:
                 self.token = response.parsed.access_token
@@ -80,9 +80,10 @@ class Requests:
                 return True
             return False
 
-    def get_models(self) -> ModelListScheme:
+    def get_models(self) -> list[ModelScheme]:
         with Client(base_url=self.settings.api_url) as client:
             response = api_client.model.get_models(client=client)
-            return response.parsed
+            return response.parsed.models  # type: ignore
+
 
 api = Requests()

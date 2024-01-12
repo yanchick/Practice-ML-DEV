@@ -1,10 +1,8 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, State, Input, Output, callback
+from dash import Input, Output, State, callback, html
 
 from src.requests import api
-
-
 
 dash.register_page(
     __name__,
@@ -61,6 +59,7 @@ layout = dbc.Container(
     ]
 )
 
+
 @callback(  # type: ignore
     Output("output_container", "children", allow_duplicate=True),
     Input("login_button", "n_clicks"),
@@ -69,12 +68,8 @@ layout = dbc.Container(
     prevent_initial_call=True,
 )
 def handle_login(n_clicks: int, username: str, password: str) -> html.Div:
-    global is_logged_in
     if n_clicks > 0:
-        # Placeholder for API call: verify_user(username, password)
-        # Replace with actual API call and handle the response
         api.login(username, password)
-        is_logged_in = True  # Update based on actual verification result
         return html.Div([html.H3("Welcome to the Main Page"), html.Button("Logout", id="logout_button")])
 
 
@@ -87,10 +82,6 @@ def handle_login(n_clicks: int, username: str, password: str) -> html.Div:
     prevent_initial_call=True,
 )
 def handle_signup(n_clicks: int, username: str, password: str, repeat_password: str) -> html.Div:
-    global is_logged_in
     if n_clicks > 0 and password == repeat_password:
-        # Placeholder for API call: create_user(username, password)
-        # Replace with actual API call and handle the response
         api.signup(username, password)
-        is_logged_in = True  # Update based on actual verification result
         return html.Div([html.H3("Welcome to the Main Page"), html.Button("Logout", id="logout_button")])

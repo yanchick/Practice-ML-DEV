@@ -1,0 +1,7 @@
+services:
+  front:
+    build: .
+    environment:
+      API_URL: http://172.19.0.5:8000
+    ports:
+      - "8050:8050"
