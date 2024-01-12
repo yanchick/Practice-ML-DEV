@@ -19,8 +19,8 @@ format:
 
 .PHONY: export-dependencies
 export-dependencies:
-	pdm export -f requirements.txt --output requirements.txt
-	pdm export -f requirements.txt --output requirements-dev.txt --with=dev
+	pdm export -f requirements -o requirements.txt
+	pdm export -f requirements -o requirements-dev.txt -G dev
 
 .PHONY: database
 database:
