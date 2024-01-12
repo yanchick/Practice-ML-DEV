@@ -26,61 +26,63 @@ def singleton(class_):  # type: ignore
 @singleton
 class Requests:
     settings = Settings()
-    client: Client = Client(base_url=settings.api_url)
-    auth_client: AuthenticatedClient
+    token: str
 
-    @classmethod
-    def login(cls, username: str, password: str) -> bool:
-        with cls.client as client:
+    def login(self, username: str, password: str) -> bool:
+        with Client(base_url=self.settings.api_url) as client:
             response = api_client.user.login(
                 client=client, body=BodyLoginV1UserLoginPost(username=username, password=password)
             )
             if response.status_code == 200 and response.parsed is not None:
-                cls.auth_client = AuthenticatedClient(base_url=cls.settings.api_url, token=response.parsed.access_token)
+                self.token = response.parsed.access_token
                 return True
             return False
 
-    @classmethod
-    def signup(cls, username: str, password: str) -> bool:
-        with cls.client as client:
+    def signup(self, username: str, password: str) -> bool:
+        with AuthenticatedClient(base_url=self.settings.api_url, token=self.token) as client:
             response = api_client.user.signup(client=client, body=SingUpRequest(username=username, password=password))
             if response.status_code == 200 and response.parsed is not None:
-                cls.auth_client = AuthenticatedClient(base_url=cls.settings.api_url, token=response.parsed.access_token)
+                self.token = response.parsed.access_token
                 return True
             return False
 
-    @classmethod
-    def me(cls) -> UserScheme | None:
-        with cls.auth_client as client:
+    def me(self) -> UserScheme | None:
+        with AuthenticatedClient(base_url=self.settings.api_url, token=self.token) as client:
             response = api_client.user.me(client=client)
             if response.status_code == 200:
                 return response.parsed
             return None
 
-    @classmethod
-    def get_user_predictions(cls) -> PredictionScheme | None:
-        with cls.auth_client as client:
+    def get_user_predictions(self) -> PredictionScheme | None:
+        with AuthenticatedClient(base_url=self.settings.api_url, token=self.token) as client:
             response = api_client.prediction.get_user_predictions(client=client)
             return response.parsed
 
-    @classmethod
-    def get_user_prediction_by_id(cls, prediction_id: int) -> PredictionScheme | None:
-        with cls.auth_client as client:
+    def get_user_prediction_by_id(self, prediction_id: int) -> PredictionScheme | None:
+        with AuthenticatedClient(base_url=self.settings.api_url, token=self.token) as client:
             response = api_client.prediction.get_user_prediction_by_id(client=client, prediction_id=prediction_id)
             return response.parsed
 
-    @classmethod
-    def post_prediction(cls, data: list[str], model_name: AvailableModels) -> bool:
-        with cls.auth_client as client:
+    def post_prediction(self, data: list[str], model_name: str) -> bool:
+        model_name_send = AvailableModels.BASE
+        match model_name:
+            case AvailableModels.BASE:
+                model_name_send = AvailableModels.BASE
+            case AvailableModels.CATBOOST:
+                model_name_send = AvailableModels.CATBOOST
+            case AvailableModels.LOGREG_TFIDF:
+                model_name_send = AvailableModels.LOGREG_TFIDF
+        with AuthenticatedClient(base_url=self.settings.api_url, token=self.token) as client:
             response = api_client.prediction.post_prediction(
-                client=client, body=RequestPrediction(data=data), model_name=model_name
+                client=client, body=RequestPrediction(data=data), model_name=model_name_send
             )
             if response.status_code == 200:
                 return True
             return False
 
-    @classmethod
-    def get_models(cls) -> ModelListScheme | None:
-        with cls.auth_client as client:
+    def get_models(self) -> ModelListScheme:
+        with Client(base_url=self.settings.api_url) as client:
             response = api_client.model.get_models(client=client)
             return response.parsed
+
+api = Requests()
