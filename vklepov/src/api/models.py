@@ -35,15 +35,5 @@ class Job(Base):
     result = Column(Text)
 
 
-class LearnModel(Base):
-    """Model that can be run in a job."""
-
-    __tablename__ = "models"
-
-    id = Column(Integer, primary_key=True, index=True)
-    description = Column(Text)
-    cost = Column(Integer)
-
-
 async def get_user_db(session: Session = Depends(get_async_session)):
     yield SQLAlchemyUserDatabase(session, User)

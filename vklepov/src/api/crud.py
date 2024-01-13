@@ -4,21 +4,19 @@ import json
 from sqlalchemy import select, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import func
+from src.prediction import prediction_models
 
 from . import models, schemas
 
 
-async def list_models(db: AsyncSession):
-    res = await db.execute(select(models.LearnModel))
-    return res.scalars().all()
+async def list_models():
+    return prediction_models.values()
 
 
-def sync_models(db: AsyncSession):
-    db.query(models.LearnModel).delete()
-    db_option = models.LearnModel(description="Baseline model, 0.97 accuracy", cost=100)
-    db.add(db_option)
-    db.commit()
-    db.refresh(db_option)
+async def get_model(id: str):
+    if id not in prediction_models:
+        return None
+    return prediction_models[id]
 
 
 async def get_balance(uid: int, db: AsyncSession):
@@ -69,11 +67,9 @@ async def get_job(uid: int, job_id: int, db: AsyncSession):
     return res
 
 
-async def start_job(user_id: int, model_id: int, db: AsyncSession):
+async def start_job(user_id: int, model_cost: int, db: AsyncSession):
     """Start job."""
 
-    ml_model = await db.get(models.LearnModel, model_id)
-    model_cost = ml_model.cost
     stmt = (
         insert(models.Job)
         .values(

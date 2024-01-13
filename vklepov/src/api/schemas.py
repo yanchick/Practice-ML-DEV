@@ -53,6 +53,7 @@ class Job(JobShort):
 class LearnModel(BaseModel):
     """Model that can be run in a job."""
 
-    id: int
+    id: str
+    name: str
     description: str
     cost: int

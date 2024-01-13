@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, BackgroundTasks
+from fastapi import APIRouter, Depends, UploadFile, BackgroundTasks, HTTPException
 from .database import get_async_session
 from . import schemas, crud, users
 from src.prediction import predict
@@ -7,10 +7,10 @@ router = APIRouter()
 
 
 @router.get("/models")
-async def list_models(db=Depends(get_async_session)) -> list[schemas.LearnModel]:
+async def list_models() -> list[schemas.LearnModel]:
     """List available ML models"""
 
-    return await crud.list_models(db)
+    return await crud.list_models()
 
 
 @router.get("/balance")
@@ -54,7 +54,7 @@ async def get_job(
 
 @router.post("/jobs")
 async def start_job(
-    model_id: int,
+    model_id: str,
     file: UploadFile,
     bg: BackgroundTasks,
     user=Depends(users.current_user),
@@ -62,7 +62,11 @@ async def start_job(
 ) -> schemas.Job:
     """Create a new job."""
 
-    job_id = await crud.start_job(user.id, model_id, db)
+    model = await crud.get_model(model_id)
+    if not model:
+        raise HTTPException(404, f"model {model_id} not found")
+    # TODO check balance
+    job_id = await crud.start_job(user.id, model.cost, db)
 
     async def on_finish(is_success: bool, payload):
         status = schemas.JobStatus.completed if is_success else schemas.JobStatus.failed
