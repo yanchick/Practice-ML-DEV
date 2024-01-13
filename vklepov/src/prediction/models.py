@@ -13,13 +13,13 @@ model_list = [
     PredictionModel(
         name="Basic Protection",
         description="A simple yet effective malware detector for basic security",
-        cost=100,
+        cost=10000,
         id="logistic-regression",
     ),
     PredictionModel(
         name="Premium Safery Deluxe",
         description="State-of-the art malware detector for sensitive applications",
-        cost=300,
+        cost=30000,
         id="random-forest",
     ),
 ]

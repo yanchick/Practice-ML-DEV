@@ -65,7 +65,9 @@ async def start_job(
     model = await crud.get_model(model_id)
     if not model:
         raise HTTPException(404, f"model {model_id} not found")
-    # TODO check balance
+    balance = await crud.get_balance(user.id, db)
+    if balance < model.cost:
+        raise HTTPException(400, "Insufficeient balance to run model")
     job_id = await crud.start_job(user.id, model.cost, db)
 
     async def on_finish(is_success: bool, payload):
