@@ -45,7 +45,7 @@ class JobShort(BaseModel):
 class Job(JobShort):
     """Computation executed in the service, including result."""
 
-    result: Optional[list[any]]
+    result: Optional[any]
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

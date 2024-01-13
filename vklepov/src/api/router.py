@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, UploadFile, BackgroundTasks
 from .database import get_async_session
 from . import schemas, crud, users
 from src.prediction import predict
@@ -56,11 +56,17 @@ async def get_job(
 async def start_job(
     model_id: int,
     file: UploadFile,
+    bg: BackgroundTasks,
     user=Depends(users.current_user),
     db=Depends(get_async_session),
 ) -> schemas.Job:
     """Create a new job."""
 
     job_id = await crud.start_job(user.id, model_id, db)
-    print(predict("random-forest", file.file))
+
+    async def on_finish(is_success: bool, payload):
+        status = schemas.JobStatus.completed if is_success else schemas.JobStatus.failed
+        await crud.finish_job(job_id, status, payload, db)
+
+    bg.add_task(predict, "random-forest", file.file, on_finish)
     return await crud.get_job(user.id, job_id, db)

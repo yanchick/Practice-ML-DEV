@@ -1,6 +1,7 @@
 """Data access wrappers."""
 from datetime import datetime
-from sqlalchemy import select, insert
+import json
+from sqlalchemy import select, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import func
 
@@ -61,7 +62,11 @@ async def get_job(uid: int, job_id: int, db: AsyncSession):
         select(models.Job).where(models.Job.id == job_id, models.Job.user_id == uid)
     )
 
-    return res.first()[0]
+    record = res.first()[0]
+    res = schemas.Job(**record.__dict__)
+    if record.result:
+        res.result = json.loads(record.result)
+    return res
 
 
 async def start_job(user_id: int, model_id: int, db: AsyncSession):
@@ -82,3 +87,14 @@ async def start_job(user_id: int, model_id: int, db: AsyncSession):
     res = await db.execute(stmt)
     await db.commit()
     return res.scalar()
+
+
+async def finish_job(job_id: int, status: schemas.JobStatus, payload, db: AsyncSession):
+    res_text = json.dumps(payload)
+    stmt = (
+        update(models.Job)
+        .where(models.Job.id == job_id)
+        .values(status=status, result=res_text)
+    )
+    await db.execute(stmt)
+    await db.commit()
