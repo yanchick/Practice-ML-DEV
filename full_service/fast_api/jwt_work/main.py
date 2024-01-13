@@ -45,6 +45,6 @@ class JWT_worker:
             username: str = payload.get("username")
             if username is None:
                 raise credentials_exception
-        except jwt.JWTError:
+        except Exception:
             raise credentials_exception
         return username

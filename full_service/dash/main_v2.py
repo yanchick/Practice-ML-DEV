@@ -99,18 +99,6 @@ app.layout = html.Div(
                     interval=1300,  # in milliseconds
                     n_intervals=0,
                 ),
-                html.Div(
-                    [
-                        html.H2("Пример использования токена"),
-                        dcc.Input(
-                            id="token-input",
-                            type="text",
-                            placeholder="Введите JWT токен",
-                        ),
-                        html.Button("Проверить токен", id="btn-check-token"),
-                        html.Div(id="output-token"),
-                    ]
-                ),
                 dcc.Store(id="token-store"),
                 html.H2("Введите модель для инференса:"),
                 dcc.Dropdown(
@@ -341,9 +329,6 @@ app.layout = html.Div(
                                 html.Div(
                                     [
                                         html.H3("История запросов:"),
-                                        html.Ul(
-                                            id="history-list",
-                                        ),
                                         html.Table(id="history-table"),
                                     ]
                                 )
@@ -381,7 +366,7 @@ app.layout = html.Div(
 def create_cols_and_data_for_table(data):
     for x in range(len(data)):
         model = model_id2name[data[x]["model"]]
-        age = "Старше 65" if data[x]["age_group"] == 0 else "Младше 65"
+        age = "Старше 65" if data[x]["age_group"] == 1 else "Младше 65"
         data_instance = (
             model,
             age,
@@ -430,11 +415,10 @@ def create_table(
 def history_data_to_strings(data):
     for x in range(len(data)):
         data_instance = data[x]
-        _ = "Младше 65" if data_instance["age_group"] == 0 else "Старше 65"
+        _ = "Младше 65" if data_instance["age_group"] == 1 else "Старше 65"
         data[
             x
         ] = f"Модель: {model_id2name[data_instance['model']]}, Запрос: {_}, Пол: {gender2gender_name[data_instance['gender']]}, Дней спорта поряд={data_instance['sport_days']}, ИМТ={data_instance['bmi']}, Глюкоза={data_instance['glucose']}, Уровень диабета={data_instance['diabetes_degree']}, Гемоглобин={data_instance['hemoglobin']}, Инсулин={data_instance['insulin']}, Результат: {round(data_instance['result'], 1)}"
-        data[x]
     return reversed(data)
 
 
@@ -487,18 +471,13 @@ def register_callback(
         response.raise_for_status()  # Проверяем успешность запроса
         return response.json().get("message", "Registration successfull")
     except requests.HTTPError as e:
-        return f"Registration failed: {str(e)}"
+        return "Registration failed: Probably registred already"
 
 
 # Callback для авторизации
 @app.callback(
     [
         Output("token-store", "data"),
-        Output(
-            "history-list",
-            "children",
-            allow_duplicate=True,
-        ),
         Output(
             "history-table",
             "children",
@@ -526,31 +505,9 @@ def login_callback(n_clicks, username, password):
         response.raise_for_status()  # Проверяем успешность запроса
         access_token = response.json().get("access_token", "")
         hl, raw_data = get_history_list(token=access_token)
-        history_list = [html.Li(h) for h in hl]
-        return [access_token, history_list, create_table(raw_data)]
+        return [access_token, create_table(raw_data)]
     except requests.HTTPError as e:
-        return [None, None, None]
-
-
-# Callback для использования токена
-@app.callback(
-    Output("output-token", "children"),
-    [Input("btn-check-token", "n_clicks")],
-    [State("token-store", "data")],
-)
-def check_token_callback(n_clicks, token):
-    if n_clicks is None:
-        raise PreventUpdate
-
-    check_token_url = "http://127.0.0.1:8935/user/predict_rows"
-    headers = {"Authorization": f"{token}"}
-
-    try:
-        response = requests.get(check_token_url, headers=headers)
-        response.raise_for_status()  # Проверяем успешность запроса
-        return f"Token is valid"
-    except requests.HTTPError as e:
-        return f"Token check failed: {str(e)}"
+        return [None, html.Div("Не авторизован")]
 
 
 @app.callback(
@@ -606,11 +563,6 @@ def get_and_display_data(
 @app.callback(
     [
         Output(
-            "history-list",
-            "children",
-            allow_duplicate=True,
-        ),
-        Output(
             "history-table",
             "children",
             allow_duplicate=True,
@@ -659,15 +611,14 @@ def predict(
             response = requests.post(fast_api_inference_url, json=data)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            return [html.Li(f"Error: {e}")]
+            return html.Div("Не авторизован")
 
         # Обработка результата
         try:
             hl, raw_data = get_history_list(token=token)
-            history_list = [html.Li(h) for h in hl]
-            return [history_list, create_table(raw_data)]
+            return [create_table(raw_data)]
         except KeyError as e:
-            return [html.Li(f"Error: {e}"), None]
+            return html.Div("Не авторизован")
 
 
 @app.callback(
@@ -675,6 +626,11 @@ def predict(
         Output("score-div", "children"),
         Output("first-block-div", "style"),
         Output("second-block-div", "style"),
+        Output(
+            "history-table",
+            "children",
+            allow_duplicate=True,
+        ),
     ],
     [Input("interval-component-main", "n_intervals")],
     State("token-store", "data"),
@@ -684,11 +640,17 @@ def update_score(n, token):
     headers = {"Authorization": f"{token}"}
     try:
         response = requests.get(bill_url, headers=headers)
+        _, raw_data = get_history_list(token=token)
         response.raise_for_status()  # Проверяем успешность запроса
-        return response.json()["bill"], {"display": "none"}, {"display": ""}
+        return (
+            response.json()["bill"],
+            {"display": "none"},
+            {"display": ""},
+            create_table(raw_data),
+        )
     except:
-        return "Not authorized", {"display": ""}, {"display": "none"}
+        return "Not authorized", {"display": ""}, {"display": "none"}, None
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)

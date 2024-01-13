@@ -57,6 +57,37 @@ def get_predict_rows_by_user(user_id, session=get_session()):
     return session.query(PredictRow).filter_by(User_id=user_id).all()
 
 
+def get_predict_rows_by_user_and_data(
+    user_id,
+    model,
+    age_group,
+    gender,
+    sport_days,
+    bmi,
+    glucose,
+    diabetes_degree,
+    hemoglobin,
+    insulin,
+    session=get_session(),
+):
+    return (
+        session.query(PredictRow)
+        .filter_by(
+            User_id=user_id,
+            model=model,
+            age_group=age_group,
+            gender=gender,
+            sport_days=sport_days,
+            bmi=bmi,
+            glucose=glucose,
+            diabetes_degree=diabetes_degree,
+            hemoglobin=hemoglobin,
+            insulin=insulin,
+        )
+        .all()
+    )
+
+
 def update_bill(bill_id, new_money_value, session=get_session()):
     try:
         bill = session.query(Bill).get(bill_id)

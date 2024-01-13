@@ -1,6 +1,6 @@
 FROM python:3.8
 
-EXPOSE 8936
+EXPOSE 6598
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ARG DEBIAN_FRONTEND=noninteractive
@@ -11,7 +11,8 @@ RUN apt-get update
 RUN apt-get install ffmpeg libsm6 libxext6 -y
 
 WORKDIR /app
-COPY ./inference_server/ /app
-RUN pip3 install -r requirements.txt
+# COPY ./fast_api/ /app
+COPY ./fast_api/ /app
+RUN pip3 install rq==1.15.1
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8936"]
+CMD ["rq", "worker", "--with-scheduler"]

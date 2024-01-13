@@ -1,31 +1,64 @@
-version: '3'
+version: '3.7'
 services:
-  mysql:
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: your_root_password
-      MYSQL_DATABASE: your_database
-      MYSQL_USER: your_user
-      MYSQL_PASSWORD: your_password
-
-  inference-server:
-    image: your_inference_server_image
+  fast_api:
+    # image: python:3.10-slim
+    build:
+      context: .
+      dockerfile: ./fast_api/Dockerfile
     ports:
-      - "5000:5000"
-    volumes:
-      - ./ml_models:/ml_models
+      - 8935:8935
+    network_mode: "host"
+    command: "uvicorn main:app --port 8935"
 
-  fastapi:
-    image: your_fastapi_image
+  inference_server:
+    build:
+      context: .
+      dockerfile: ./inference_server/Dockerfile
     ports:
-      - "8000:8000"
-    depends_on:
-      - mysql
-      - inference-server
+      - 8936:8936
+    network_mode: "host"
+    command: "uvicorn main:app --port 8936"
 
   dash:
-    image: your_dash_image
+    build:
+      context: .
+      dockerfile: ./dash/Dockerfile
+    command: "python main_v2.py"
+    expose:
+      - 8500
     ports:
-      - "8050:8050"
-    depends_on:
-      - fastapi
+      - 8500:8500
+    network_mode: "host"
+  
+  # rq-dashboard:
+  #   image: jaredv/rq-docker:0.0.2 
+  #   command: rq-dashboard -H rq-server
+  #   ports:
+  #     - 9181:9181
+  #   network_mode: "host"
+
+  rq-worker:
+    image: jaredv/rq-docker:0.0.5
+    command: rq worker -u redis://localhost:6379
+    deploy:
+      replicas: 1
+    network_mode: "host"
+
+  rq-server:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    network_mode: "host"
+
+  # rq:
+  #   build:
+  #     context: .
+  #     dockerfile: ./rq/Dockerfile
+  #   # volumes:
+  #   #   - ./fast_api/:/app/fast_api/
+  #   # working_dir: /app/fast_api/
+  #   command: "rq worker --with-scheduler"
+  #   ports:
+  #     - "6598:6598"
+  #   network_mode: "host"
+  

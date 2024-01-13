@@ -81,7 +81,6 @@ def predict(data: InputData):
                     ]
                 )
             )
-
         return {
             "prediction": result.tolist(),
         }

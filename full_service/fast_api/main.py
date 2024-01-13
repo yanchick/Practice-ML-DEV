@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Any
 from configs.main import model_to_money
 
-from infrastructure.handlers.main import Inference_handler
+# from concurrent.futures import ThreadPoolExecutor
+import asyncio
 
+from infrastructure.handlers.main import Inference_handler
 
 from infrastructure.database.database_functions import (
     get_user_by_username,
@@ -14,11 +15,12 @@ from infrastructure.database.database_functions import (
     get_predict_rows_by_user,
     update_bill,
     create_user,
-    delete_user,
-    update_user_fields,
-    create_bill,
+    # delete_user,
+    # update_user_fields,
+    # create_bill,
     add_predict_row,
     authenticate_user,
+    get_predict_rows_by_user_and_data,
 )
 
 from jwt_work.main import JWT_worker
@@ -50,6 +52,8 @@ main_handler = Inference_handler()
 jwt_worker = JWT_worker()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+job_store = []
 
 
 @app.post("/register")
@@ -95,10 +99,13 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 # Отправка данных для обработки моделью
 @app.post("/send_data")
-def send_data_for_processing(data: InputData):
+async def send_data_for_processing(data: InputData):
     current_user = jwt_worker.get_current_user(data.token)
     user = get_user_by_username(current_user)
+    type_of_res = "None"
     if user:
+        bill = get_bill_by_user_id(user.id)
+        cost = model_to_money[int(data.model)]
         checked_data = main_handler._check_data(
             data.model,
             data.age_group,
@@ -110,40 +117,63 @@ def send_data_for_processing(data: InputData):
             data.LBXGLT,
             data.LBXIN,
         )
-        result = main_handler.predict(
-            data.model,
-            data.age_group,
-            data.RIAGENDR,
-            data.PAQ605,
-            data.BMXBMI,
-            data.LBXGLU,
-            data.DIQ010,
-            data.LBXGLT,
-            data.LBXIN,
+        old_rows = get_predict_rows_by_user_and_data(
+            user.id,
+            checked_data[0],
+            checked_data[1],
+            checked_data[2],
+            checked_data[3],
+            checked_data[4],
+            checked_data[5],
+            checked_data[6],
+            checked_data[7],
+            checked_data[8],
         )
-        if result is not None:
-            add_predict_row(
-                user.id,
-                checked_data[0],
-                checked_data[1],
-                checked_data[2],
-                checked_data[3],
-                checked_data[4],
-                checked_data[5],
-                checked_data[6],
-                checked_data[7],
-                checked_data[8],
-                result,
-            )
-            cost = model_to_money[int(data.model)]
-            bill = get_bill_by_user_id(user.id)
-            if update_bill(bill.id, bill.money - cost):
-                return {
-                    "message": "Data processed successfully",
-                    "prediction": result,
-                }
+        if len(old_rows) > 0:
+            result = old_rows[0].result
+            type_of_res = "History"
+        else:
+            type_of_res = "Predict"
+            if (bill.money - cost) >= 0:
+                result = main_handler.predict(
+                    user.id,
+                    data.model,
+                    data.age_group,
+                    data.RIAGENDR,
+                    data.PAQ605,
+                    data.BMXBMI,
+                    data.LBXGLU,
+                    data.DIQ010,
+                    data.LBXGLT,
+                    data.LBXIN,
+                )
             else:
-                raise HTTPException(status_code=404, detail="User not found")
+                return {"message": "Not enough units in account"}
+        if result is not None:
+            print(type(result))
+            job_store.append((result, user.id, checked_data))
+            # add_predict_row(
+            #     user.id,
+            #     checked_data[0],
+            #     checked_data[1],
+            #     checked_data[2],
+            #     checked_data[3],
+            #     checked_data[4],
+            #     checked_data[5],
+            #     checked_data[6],
+            #     checked_data[7],
+            #     checked_data[8],
+            #     result,
+            # )
+            if type_of_res == "Predict":
+                if update_bill(bill.id, bill.money - cost):
+                    return {"message": "Data processed successfully"}
+                else:
+                    raise HTTPException(
+                        status_code=404, detail="User not found"
+                    )
+            else:
+                return {"message": "Data founded in history"}
         else:
             return {"message": "Data processing failed"}
     else:
@@ -180,3 +210,48 @@ def get_user_predict_rows(request: Request):
         }
     else:
         raise HTTPException(status_code=404, detail="User not found")
+
+
+async def update_all_rows():
+    while True:
+        if len(job_store) > 0:
+            i = 0
+            while i < len(job_store):
+                current_job, user_id, checked_data = job_store[i]
+                if type(current_job) is float:
+                    result = current_job
+                else:
+                    result = current_job.return_value()
+                print(result)
+                if result is not None:
+                    add_predict_row(
+                        user_id,
+                        checked_data[0],
+                        checked_data[1],
+                        checked_data[2],
+                        checked_data[3],
+                        checked_data[4],
+                        checked_data[5],
+                        checked_data[6],
+                        checked_data[7],
+                        checked_data[8],
+                        result,
+                    )
+                    job_store.pop(i)
+                else:
+                    i += 1
+        await asyncio.sleep(5)
+
+
+# @app.on_event("startup")
+# async def startup_event():
+#     with ThreadPoolExecutor() as executor:
+#         while True:
+#             time.sleep(5)
+#             executor.submit(update_all_rows)
+
+
+@app.on_event("startup")
+async def update_rows_loop():
+    app.loop = asyncio.get_event_loop()
+    app.loop.create_task(update_all_rows())
