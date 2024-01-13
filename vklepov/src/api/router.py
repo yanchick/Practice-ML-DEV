@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from .database import get_async_session
 from . import schemas, crud, users
+from src.prediction import predict
 
 router = APIRouter()
 
@@ -53,11 +54,13 @@ async def get_job(
 
 @router.post("/jobs")
 async def start_job(
-    job: schemas.JobCreate,
+    model_id: int,
+    file: UploadFile,
     user=Depends(users.current_user),
     db=Depends(get_async_session),
 ) -> schemas.Job:
     """Create a new job."""
 
-    job_id = await crud.start_job(user.id, job.model_id, db)
+    job_id = await crud.start_job(user.id, model_id, db)
+    print(predict("random-forest", file.file))
     return await crud.get_job(user.id, job_id, db)

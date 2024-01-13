@@ -76,7 +76,7 @@ Top-p: 1
 Штраф за частоту: 0
 Система
 You are a large language model.
-Carefully heed the user's instructions. 
+Carefully heed the user's instructions.
 Respond using Markdown.
 Пользователь
 Напиши слайды с примерами код про датаклассы и их использования для динамического конструирования объектов и вызова функций этих объектов
@@ -207,7 +207,7 @@ class ClassificationModel:
             model = ensemble.RandomForestClassifier(**self.model_parameters)
         else:
             raise ValueError("Unknown model name: {}".format(self.model_name))
-        
+
         model.load(self.model_path)
         return model
 

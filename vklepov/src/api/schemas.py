@@ -50,10 +50,6 @@ class Job(JobShort):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class JobCreate(BaseModel):
-    model_id: int
-
-
 class LearnModel(BaseModel):
     """Model that can be run in a job."""
 
