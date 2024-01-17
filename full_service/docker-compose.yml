@@ -1,0 +1,44 @@
+version: '3.7'
+services:
+  fast_api:
+    # image: python:3.10-slim
+    build:
+      context: .
+      dockerfile: ./fast_api/Dockerfile
+    ports:
+      - 8935:8935
+    network_mode: "host"
+    command: "uvicorn main:app --port 8935"
+
+  inference_server:
+    build:
+      context: .
+      dockerfile: ./inference_server/Dockerfile
+    ports:
+      - 8936:8936
+    network_mode: "host"
+    command: "uvicorn main:app --port 8936"
+
+  dash:
+    build:
+      context: .
+      dockerfile: ./dash/Dockerfile
+    command: "python main_v2.py"
+    expose:
+      - 8500
+    ports:
+      - 8500:8500
+    network_mode: "host"
+
+  rq-server:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    network_mode: "host"
+
+  rq-worker:
+    build:
+      context: .
+      dockerfile: ./rq/Dockerfile
+    command: "rq worker --with-scheduler high"
+    network_mode: "host"
