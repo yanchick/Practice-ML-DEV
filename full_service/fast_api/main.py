@@ -4,9 +4,6 @@ from pydantic import BaseModel
 from typing import Any
 from configs.main import model_to_money
 
-# from concurrent.futures import ThreadPoolExecutor
-import asyncio
-
 from infrastructure.handlers.main import Inference_handler
 
 from infrastructure.database.database_functions import (
@@ -15,9 +12,6 @@ from infrastructure.database.database_functions import (
     get_predict_rows_by_user,
     update_bill,
     create_user,
-    # delete_user,
-    # update_user_fields,
-    # create_bill,
     add_predict_row,
     authenticate_user,
     get_predict_rows_by_user_and_data,
@@ -53,12 +47,9 @@ jwt_worker = JWT_worker()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-job_store = []
-
 
 @app.post("/register")
 def register_user(pd: PersonalData):
-    # try:
     user = create_user(
         username=pd.username,
         password=pd.password,
@@ -74,8 +65,22 @@ def register_user(pd: PersonalData):
     }
 
 
-# except:
-#     raise HTTPException(status_code=409, detail="User if registered")
+@app.post("/add_row")
+async def add_row(request: Request):
+    json_body = await request.json()
+    add_predict_row(
+        user_id=json_body["user_id"],
+        model=json_body["model"],
+        age_group=json_body["age_group"],
+        gender=json_body["gender"],
+        sport_days=json_body["sport_days"],
+        bmi=json_body["bmi"],
+        glucose=json_body["glucose"],
+        diabetes_degree=json_body["diabetes_degree"],
+        hemoglobin=json_body["hemoglobin"],
+        insulin=json_body["insulin"],
+        result=json_body["result"],
+    )
 
 
 @app.post("/token")
@@ -97,7 +102,6 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-# Отправка данных для обработки моделью
 @app.post("/send_data")
 async def send_data_for_processing(data: InputData):
     current_user = jwt_worker.get_current_user(data.token)
@@ -150,21 +154,6 @@ async def send_data_for_processing(data: InputData):
             else:
                 return {"message": "Not enough units in account"}
         if result is not None:
-            print(type(result))
-            job_store.append((result, user.id, checked_data))
-            # add_predict_row(
-            #     user.id,
-            #     checked_data[0],
-            #     checked_data[1],
-            #     checked_data[2],
-            #     checked_data[3],
-            #     checked_data[4],
-            #     checked_data[5],
-            #     checked_data[6],
-            #     checked_data[7],
-            #     checked_data[8],
-            #     result,
-            # )
             if type_of_res == "Predict":
                 if update_bill(bill.id, bill.money - cost):
                     return {"message": "Data processed successfully"}
@@ -210,48 +199,3 @@ def get_user_predict_rows(request: Request):
         }
     else:
         raise HTTPException(status_code=404, detail="User not found")
-
-
-async def update_all_rows():
-    while True:
-        if len(job_store) > 0:
-            i = 0
-            while i < len(job_store):
-                current_job, user_id, checked_data = job_store[i]
-                if type(current_job) is float:
-                    result = current_job
-                else:
-                    result = current_job.return_value()
-                print(result)
-                if result is not None:
-                    add_predict_row(
-                        user_id,
-                        checked_data[0],
-                        checked_data[1],
-                        checked_data[2],
-                        checked_data[3],
-                        checked_data[4],
-                        checked_data[5],
-                        checked_data[6],
-                        checked_data[7],
-                        checked_data[8],
-                        result,
-                    )
-                    job_store.pop(i)
-                else:
-                    i += 1
-        await asyncio.sleep(5)
-
-
-# @app.on_event("startup")
-# async def startup_event():
-#     with ThreadPoolExecutor() as executor:
-#         while True:
-#             time.sleep(5)
-#             executor.submit(update_all_rows)
-
-
-@app.on_event("startup")
-async def update_rows_loop():
-    app.loop = asyncio.get_event_loop()
-    app.loop.create_task(update_all_rows())

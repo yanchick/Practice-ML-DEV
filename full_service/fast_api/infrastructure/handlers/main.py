@@ -1,18 +1,14 @@
-import requests
 from redis import Redis
-from rq import Queue, Retry
-from .queue.queue_functions import (
+from rq import Queue
+from .queue_work.queue_functions import (
     process_response,
-    # add_prediction_row_from_queue,
 )
-from rq import Callback
 
 
 class Inference_handler:
     def __init__(self, inference_server_url="http://127.0.0.1:8936"):
         self.inference_server_url = inference_server_url
         self.predict_url = f"{self.inference_server_url}/predict"
-        # self.redisq = Queue(connection=Redis('127.0.0.1', 6959))
         self.redisq = Queue(connection=Redis())
 
     def _check_data(
@@ -108,13 +104,6 @@ class Inference_handler:
                 "LBXGLT": checked_data[7],
                 "LBXIN": checked_data[8],
             }
-            res = self.redisq.enqueue(
-                "infrastructure.handlers.queue.process_response",
-                self.predict_url,
-                data,
-                retry=Retry(max=5),
-                # on_success=Callback(
-                #     add_prediction_row_from_queue, data, user_id
-                # ),
-            )
+            res = process_response.delay(self.predict_url, data, user_id)
+
             return res

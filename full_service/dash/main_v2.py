@@ -96,7 +96,7 @@ app.layout = html.Div(
                 html.H1("Авторизация не пройдена", id="score-div"),
                 dcc.Interval(
                     id="interval-component",
-                    interval=1300,  # in milliseconds
+                    interval=1300,
                     n_intervals=0,
                 ),
                 dcc.Store(id="token-store"),
@@ -342,25 +342,11 @@ app.layout = html.Div(
         ),
         dcc.Interval(
             id="interval-component-main",
-            interval=1000,  # in milliseconds
+            interval=1000,
             n_intervals=0,
         ),
     ]
 )
-
-# {
-#   "age_group": 1,
-#   "User_id": 4,
-#   "sport_days": 2,
-#   "glucose": 137,
-#   "hemoglobin": 219,
-#   "result": 75.66666666666667,
-#   "id": 43,
-#   "gender": 1,
-#   "bmi": 28.9,
-#   "diabetes_degree": 1,
-#   "insulin": 33
-# }
 
 
 def create_cols_and_data_for_table(data):
@@ -395,7 +381,7 @@ def create_table(
         "Уровень диабета",
         "Гемоглобин",
         "Инсулин",
-        "Результат",
+        "Предсказанный возраст",
     ),
 ):
     data = create_cols_and_data_for_table(raw_data)
@@ -428,7 +414,7 @@ def get_history_list(
     headers = {"Authorization": f"{token}"}
     try:
         response = requests.get(history_url, headers=headers)
-        response.raise_for_status()  # Проверяем успешность запроса
+        response.raise_for_status()
         history_strings = history_data_to_strings(
             response.json()["predict_rows"]
         )
@@ -437,7 +423,6 @@ def get_history_list(
         return []
 
 
-# Callback для регистрации
 @app.callback(
     Output("output-register", "children"),
     [Input("btn-register", "n_clicks")],
@@ -468,13 +453,12 @@ def register_callback(
 
     try:
         response = requests.post(register_url, json=data)
-        response.raise_for_status()  # Проверяем успешность запроса
+        response.raise_for_status()
         return response.json().get("message", "Registration successfull")
     except requests.HTTPError as e:
         return "Registration failed: Probably registred already"
 
 
-# Callback для авторизации
 @app.callback(
     [
         Output("token-store", "data"),
@@ -502,7 +486,7 @@ def login_callback(n_clicks, username, password):
 
     try:
         response = requests.post(login_url, data=data)
-        response.raise_for_status()  # Проверяем успешность запроса
+        response.raise_for_status()
         access_token = response.json().get("access_token", "")
         hl, raw_data = get_history_list(token=access_token)
         return [access_token, create_table(raw_data)]
@@ -613,7 +597,6 @@ def predict(
         except requests.exceptions.RequestException as e:
             return html.Div("Не авторизован")
 
-        # Обработка результата
         try:
             hl, raw_data = get_history_list(token=token)
             return [create_table(raw_data)]
@@ -641,7 +624,7 @@ def update_score(n, token):
     try:
         response = requests.get(bill_url, headers=headers)
         _, raw_data = get_history_list(token=token)
-        response.raise_for_status()  # Проверяем успешность запроса
+        response.raise_for_status()
         return (
             response.json()["bill"],
             {"display": "none"},

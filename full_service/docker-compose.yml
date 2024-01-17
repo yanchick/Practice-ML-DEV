@@ -29,20 +29,6 @@ services:
     ports:
       - 8500:8500
     network_mode: "host"
-  
-  # rq-dashboard:
-  #   image: jaredv/rq-docker:0.0.2 
-  #   command: rq-dashboard -H rq-server
-  #   ports:
-  #     - 9181:9181
-  #   network_mode: "host"
-
-  rq-worker:
-    image: jaredv/rq-docker:0.0.5
-    command: rq worker -u redis://localhost:6379
-    deploy:
-      replicas: 1
-    network_mode: "host"
 
   rq-server:
     image: redis:alpine
@@ -50,15 +36,9 @@ services:
       - 6379:6379
     network_mode: "host"
 
-  # rq:
-  #   build:
-  #     context: .
-  #     dockerfile: ./rq/Dockerfile
-  #   # volumes:
-  #   #   - ./fast_api/:/app/fast_api/
-  #   # working_dir: /app/fast_api/
-  #   command: "rq worker --with-scheduler"
-  #   ports:
-  #     - "6598:6598"
-  #   network_mode: "host"
-  
+  rq-worker:
+    build:
+      context: .
+      dockerfile: ./rq/Dockerfile
+    command: "rq worker --with-scheduler high"
+    network_mode: "host"

@@ -1,19 +1,9 @@
 from .configs import DATABASE_URL
 from sqlalchemy import (
     create_engine,
-    Column,
-    Integer,
-    String,
-    Float,
-    ForeignKey,
-    select,
-    delete,
-    update,
 )
 import bcrypt
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 from .create_db import Bill, User, PredictRow
 
