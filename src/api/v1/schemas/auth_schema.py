@@ -26,7 +26,5 @@ class UserLoginResponse(BaseModel):
     user_info: User
 
 
-class Payload(BaseModel):
-    id: int
-    email: str
-    name: str
+class Balance(BaseModel):
+    balance: int

@@ -5,7 +5,7 @@ from hashlib import md5
 
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from api.v1.schemas.auth_schema import UserLogin, UserRegister, UserLoginResponse, User, Payload
+from api.v1.schemas.auth_schema import UserLogin, UserRegister, UserLoginResponse, User
 from infrastructure.repository.base_repository import AbstractRepository
 from infrastructure.core.security import create_jwt_token
 from infrastructure.database.model import Users
@@ -51,6 +51,14 @@ class AuthService:
 
         return UserLoginResponse(access_token=access_token,
                                  user_info=user)
+
+    async def get_balance(self, user: User):
+
+        db_user = await self.users_repo.find_by_options(name=user.name, unique=True)
+        if db_user is None:
+            raise Exception("User not found")
+        return {'balance': db_user.balance}
+
 
 def get_auth_service():
     return AuthService(UserRepository)

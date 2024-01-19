@@ -1,5 +1,7 @@
 # Billing-based ML Service: Liver Disease Lifespan Predictor
 
+![UI Sample](ui_sample.png "Web UI sample")
+
 ## Description/Описание
 
 Для получения предсказания примерной ожидаемой продолжительности жизки (+- 1.5 года) пользователю необходимо зарегистрироваться в сервисе, после чего подготовить .csv-файл с данными ([образец доступен по ссылке](configs\input\cirrhosis.csv)) и выбрать ML-модель.
@@ -33,4 +35,5 @@
 - `--host` - 127.0.0.1 by default
 - `--resetdb` - False by default. True to re-create DB.
 
-## Usage
+## Database scheme/Схема БД
+![UI Sample](db_diagram.png "Web UI sample")

@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI Auth Example</title>
+    <title>Liver Disease Lifespan Predictor v0.1</title>
 </head>
 <body>
 
-    <h1>FastAPI Auth Example</h1>
+    <h1>Liver Disease Lifespan Predictor v0.1</h1>
 
     <!-- Login Form -->
     <h2>Login</h2>
@@ -91,6 +91,7 @@
 
             alert('Successfully logged in!');
             console.log(data);
+            getBalance();
         }
 
         async function register() {
@@ -115,6 +116,7 @@
 
             alert('Successfully registered!');
             console.log(data);
+            getBalance();
         }
 
         async function getUserInfo() {
@@ -126,10 +128,11 @@
 
             const data = await response.json();
             console.log(data);
+            getBalance();
         }
 
         async function getBalance() {
-            const response = await fetch('http://localhost:7999/api/auth/me', {
+            const response = await fetch('http://localhost:7999/api/auth/balance', {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,  // Include the access token
                 },
@@ -172,8 +175,8 @@
 
             const data = await response.json();
 
-            document.getElementById('predictionStatus').innerText = `Status: ${data.status}`;
-            document.getElementById('predictionResult').innerText = `Result: ${data.result || 'N/A'}`;
+            document.getElementById('predictionStatus').innerText = `Is ready: ${data.is_finished}`;
+            document.getElementById('predictionResult').innerText = `Result: ${data.output || 'N/A'}`;
         }
 
         async function makePrediction() {

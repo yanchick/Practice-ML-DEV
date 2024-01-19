@@ -5,7 +5,6 @@ import pandas as pd
 from rq.decorators import job
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from api.v1.schemas.auth_schema import UserLogin, UserRegister, UserLoginResponse, User, Payload
 from infrastructure.core.exceptions import NotFoundError, DuplicatedError
 from infrastructure.repository.base_repository import AbstractRepository
 from infrastructure.repository.user_repository import UserRepository
