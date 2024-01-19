@@ -1,0 +1,275 @@
+openapi: 3.0.0
+info:
+  title: ML-Billing-Service API
+  version: 1.0.0
+  description: |
+    ML-сервис с подсистемой биллинга для предсказаний на основе ML-моделей.
+paths:
+  /user/registration:
+    post:
+      summary: Зарегистрировать нового пользователя
+      tags:
+      - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistration"
+      responses:
+        '201':
+          description: Успешная регистрация
+          content:
+            application/json:
+              example:
+                message: Регистрация успешна
+        '400':
+          description: Ошибка в запросе
+          content:
+            application/json:
+              example:
+                message: Некорректные данные в запросе
+        '409':
+          description: Пользователь уже существует
+          content:
+            application/json:
+              example:
+                message: Пользователь с таким именем уже зарегистрирован
+
+  /user/login:
+    post:
+      summary: Войти в систему
+      tags:
+      - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentials"  
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                token: jwt_token
+        '400':
+          description: Некорректные учетные данные
+          content:
+            application/json:
+              example:
+                message: Некорректные учетные данные
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              example:
+                message: Неавторизованный доступ
+
+  /user/logout:
+    post:
+      summary: Выйти из системы
+      tags:
+      - User
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: Успешный выход
+
+  /user/delete:
+    delete:
+      summary: Удаление аккаунта
+      tags:
+      - User
+      responses:
+        '200':
+          description: Аккаунт успешно удален
+
+  /billing:
+    get:
+      summary: История списания и зачисления кредитов
+      tags:
+      - Billing
+      responses:
+        '200':
+          description: Список транзакций
+          content:
+            application/json:
+              example:
+                transactions:
+                  - transaction_id: "1"
+                    type: "credit_charge"
+                    amount: 10
+                    timestamp: "2023-01-01T12:00:00Z"
+                  - transaction_id: "2"
+                    type: "credit_deposit"
+                    amount: 20
+                    timestamp: "2023-01-02T14:30:00Z"
+    post:
+      summary: Пополнить баланс пользователя
+      tags:
+      - Billing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddBalance'
+      responses:
+        '200':
+          description: Успешное пополнение
+          content:
+            application/json:
+              example:
+                balance: 100
+        '400':
+          description: Ошибка в запросе
+          content:
+            application/json:
+              example:
+                message: Некорректные данные для пополнения баланса
+        '401':
+          description: Неавторизованный запрос
+          content:
+            application/json:
+              example:
+                message: Требуется аутентификация для пополнения баланса
+
+  /upload-data:
+    post:
+      summary: Загрузка csv-файла
+      tags:
+      - Prediction
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadData'       
+      responses:
+        '200':
+          description: Файл успешно загружен
+
+  /prediction:
+    post:
+      summary: Выполнить предсказание
+      tags:
+      - Prediction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPrediction' 
+      responses:
+        '200':
+          description: Успешное предсказание
+          content:
+            application/json:
+              example:
+                file_id: "123456"
+                credits_used: 5
+        '404':
+          description: Предсказание не удалось
+          content:
+            application/json:
+              example:
+                message: Некорректные данные в запросе
+
+    get:
+      summary: История предсказаний
+      tags:
+      - Prediction
+      responses:
+        '200':
+          description: Список файлов предсказаний
+          content:
+            application/json:
+              example:
+                predictions:
+                  - file_id: "123456"
+                    model_used: "Catboost"
+                    timestamp: "2023-01-05T14:20:00Z" 
+
+  /download/{file_id}:
+    get:
+      summary: Скачать файл с предсказаниями
+      tags:
+      - Prediction
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Файл успешно скачан
+
+components:
+  securitySchemes:
+    JWT:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  schemas:
+    UserRegistration:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    UserCredentials:    
+      type: object
+      properties:
+        email:
+          type: string
+          description: E-mail пользователя
+        password:
+          type: string
+          format: password
+          description: Пароль пользователя
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT-токен для авторизации
+
+    AddBalance: 
+      type: object
+      properties:
+        amount:
+          type: integer
+          enum: [5, 10, 50, 100]
+          description: Сумма для пополнения баланса
+      required:
+        - amount
+
+    UploadData:  
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+
+    GetPrediction: 
+      type: object
+      properties:
+        model_name:
+          type: string
+          description: Название выбранной ML-модели
+        input_data:
+          type: object
+          description: Входные данные для предсказания
+      required:
+        - model_name
+        - input_data
