@@ -12,6 +12,9 @@ from src.infrastructure.database.utils import init_db
 app = FastAPI()
 app.include_router(api_router)
 
+for route in api_router.routes:
+    print(route)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # TODO: Adjust this

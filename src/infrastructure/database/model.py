@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, func, ForeignKey, Float, JSON
 
 
 class Base(DeclarativeBase): pass
@@ -46,14 +46,14 @@ class Models(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     model_type = Column(String)
-    prediction_cost = Column(Integer)
+    cost = Column(Integer)
 
     def __repr__(self):
         """
-        Get set: {id, name, model_type, prediction_cost}
+        Get set: {id, name, model_type, cost}
         :returns: Set
         """
-        return self.id, self.name, self.model_type, self.prediction_cost
+        return self.id, self.name, self.model_type, self.cost
 
 
 class Predictions(Base):
@@ -62,13 +62,15 @@ class Predictions(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     model_id = Column(Integer)
-    input_path = Column(String)
-    status = Column(String)
-    result = Column(Float)
+    prediction_date = Column(DateTime(timezone=True), default=func.now())
+    is_success = Column(Boolean)
+    is_finished = Column(Boolean)
+    error_info = Column(String)
+    output = Column(JSON, nullable=True)
 
     def __repr__(self):
         """
         Get set: {id, user_id, model_id, input_path, status, result}
         :returns: Set
         """
-        return self.id, self.user_id, self.model_id, self.input_path, self.status, self.result
+        return self.id, self.user_id, self.model_id

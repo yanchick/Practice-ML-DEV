@@ -3,10 +3,11 @@ from pathlib import Path
 from pathlib import Path
 
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from infrastructure.database.model import Base
+from infrastructure.database.model import Base, Models
 
 
 SCRIPT_DIR = Path(__file__).parent
@@ -22,3 +23,11 @@ def init_db(engine=sync_engine, drop_all=False):
     if drop_all:
         Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+
+    # Create a default "lasso" model
+    with Session(engine) as session:
+        lasso_model = session.query(Models).filter_by(name='lasso').first()
+        if lasso_model is None:
+            default_model = Models(name='lasso', model_type='lifespan', cost=100)
+            session.add(default_model)
+            session.commit()

@@ -35,6 +35,39 @@
     <h2>User Info</h2>
     <button type="button" onclick="getUserInfo()">Get Me</button>
 
+    <h1>Life Expectancy Prediction</h1>
+
+    <!-- Model Selection -->
+    <h2>Choose Model</h2>
+    <select id="modelSelection">
+        <option value="lasso">Lasso</option>
+    </select>
+
+    <!-- Upload CSV Form -->
+    <h2>Upload CSV File</h2>
+    <form id="uploadForm">
+        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+        <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+
+    <!-- Check Balance -->
+    <h2>Check Balance</h2>
+    <p id="balance">Balance: Loading...</p>
+
+    <!-- Make Prediction -->
+    <h2>Make Prediction</h2>
+    <button type="button" onclick="makePrediction()">Predict</button>
+
+    <!-- Check Prediction Status -->
+    <h2>Check Prediction Status</h2>
+    <form id="statusForm">
+        <label for="predictionId">Prediction ID:</label>
+        <input type="text" id="predictionId" name="predictionId" required>
+        <button type="button" onclick="checkStatus()">Check Status</button>
+    </form>
+    <p id="predictionStatus">Status: Not checked</p>
+    <p id="predictionResult">Result: N/A</p>
+
     <script>
         let accessToken;  // Variable to store the access token
 
@@ -93,6 +126,59 @@
 
             const data = await response.json();
             console.log(data);
+        }
+
+        async function getBalance() {
+            const response = await fetch('http://localhost:7999/api/auth/me', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+            document.getElementById('balance').innerText = `Balance: ${data.balance} coins`;
+        }
+
+        async function uploadFile() {
+            const model = document.getElementById('modelSelection').value;
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`http://localhost:7999/api/predict/${model}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            alert(`Prediction ID: ${data}`);
+            getBalance();  // Update balance after making a prediction
+        }
+
+        async function checkStatus() {
+            const predictionId = document.getElementById('predictionId').value;
+
+            const response = await fetch(`http://localhost:7999/api/predict/${predictionId}`, {
+                method: 'GET',  // Ensure the correct method is specified
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+
+            document.getElementById('predictionStatus').innerText = `Status: ${data.status}`;
+            document.getElementById('predictionResult').innerText = `Result: ${data.result || 'N/A'}`;
+        }
+
+        async function makePrediction() {
+            // Call uploadFile function since it handles both file upload and balance update
+            await uploadFile();
         }
     </script>
 

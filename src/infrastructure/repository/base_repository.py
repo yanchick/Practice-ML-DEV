@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from abc import ABC, abstractmethod
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from infrastructure.database.utils import async_session_maker
@@ -27,6 +27,12 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await session.execute(stmt)
             await session.commit()
             return res.scalar_one()
+
+    async def update(self, data: dict, **kwargs):
+        async with async_session_maker() as session:
+            stmt = update(self.model).filter_by(**kwargs).values(**data)
+            await session.execute(stmt)
+            await session.commit()
     
     async def find_by_options(self, unique: bool = False, **kwargs):
         async with async_session_maker() as session:

@@ -28,13 +28,7 @@ class AuthService:
 
         user: User = User(id=db_user.id, name=db_user.name, email=db_user.email)
 
-        payload = Payload(
-            id=user.id,
-            email=user.email,
-            name=user.name,
-        )
-
-        access_token = create_jwt_token(payload.dict())
+        access_token = create_jwt_token(user)
 
         return UserLoginResponse(access_token=access_token,
                                  user_info=user)
@@ -48,9 +42,10 @@ class AuthService:
 
         user_id = await self.users_repo.add(data={"name": user.name, 
                                                   "password": md5(user.password.encode('utf-8')).hexdigest(),
-                                                  "email": user.email})
+                                                  "email": user.email,
+                                                  "balance": 500})
 
-        user: User = User(id=user_id, name=user.name)
+        user: User = User(id=user_id, name=user.name, email=user.email)
 
         access_token = create_jwt_token(user)
 

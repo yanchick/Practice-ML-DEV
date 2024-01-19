@@ -18,9 +18,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 bearer_scheme = HTTPBearer()
 
 
-def create_jwt_token(subject: dict) -> str:
-    payload = {**subject}
-    encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+def create_jwt_token(user: User) -> str:
+    data = user.model_dump()
+    
+    to_encode = data.copy()
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
