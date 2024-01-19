@@ -30,10 +30,7 @@ class Lasso(Model):
         self.scaler = StandardScaler()
 
     def predict(self, data: pd.DataFrame, *args, **kwargs):
-        output = {}
-        output['timestamp'] = data.index
-        output['lifespan'] = self.model.predict(self.preprocess(data))
-        return output
+        return self.model.predict(self.preprocess(data))[0]
 
     def preprocess(self, data: DataFrame, *args, **kwargs) -> DataFrame:
         data['Sex'] = data['Sex'].replace({'M':0, 'F':1})

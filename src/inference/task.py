@@ -36,12 +36,12 @@ async def predict(prediction_id, model_name, model_cost, user_id, user_balance, 
         else:
             return "No file provided"
 
-        expectancy_years = model.predict(data=data)
+        output = model.predict(data=data)
 
         update_data = {"prediction_date": datetime.now(),
                        "is_success": True,
                        "is_finished": True,
-                       "output": expectancy_years}
+                       "output": output}
     
     except Exception as e:
         print(e)
