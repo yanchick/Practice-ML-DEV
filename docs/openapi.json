@@ -1,0 +1,827 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "fca-api",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/users-report": {
+      "get": {
+        "tags": [
+          "v1",
+          "admin"
+        ],
+        "summary": "Get Users Report",
+        "operationId": "get_users_report_api_v1_admin_users_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersReport"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/predictions-reports": {
+      "get": {
+        "tags": [
+          "v1",
+          "admin"
+        ],
+        "summary": "Get Predictions Report",
+        "operationId": "get_predictions_report_api_v1_admin_predictions_reports_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Predictions Report Api V1 Admin Predictions Reports Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PredictionsReport"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/credits-report": {
+      "get": {
+        "tags": [
+          "v1",
+          "admin"
+        ],
+        "summary": "Get Credits Report",
+        "operationId": "get_credits_report_api_v1_admin_credits_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsReport"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/sign-in": {
+      "post": {
+        "tags": [
+          "v1",
+          "v1",
+          "auth"
+        ],
+        "summary": "Sign In",
+        "operationId": "sign_in_api_v1_auth_sign_in_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseUser"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/sign-up": {
+      "post": {
+        "tags": [
+          "v1",
+          "v1",
+          "auth"
+        ],
+        "summary": "Sign Up",
+        "operationId": "sign_up_api_v1_auth_sign_up_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseUser"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/billing/balance": {
+      "get": {
+        "tags": [
+          "v1",
+          "v1",
+          "v1",
+          "billing"
+        ],
+        "summary": "Get Balance",
+        "operationId": "get_balance_api_v1_billing_balance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Balance Api V1 Billing Balance Get",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/billing/history": {
+      "get": {
+        "tags": [
+          "v1",
+          "v1",
+          "v1",
+          "billing"
+        ],
+        "summary": "Get Transaction History",
+        "operationId": "get_transaction_history_api_v1_billing_history_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Transaction History Api V1 Billing History Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionInfo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/billing/deposit": {
+      "post": {
+        "tags": [
+          "v1",
+          "v1",
+          "v1",
+          "billing"
+        ],
+        "summary": "Deposit Funds",
+        "operationId": "deposit_funds_api_v1_billing_deposit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/prediction/models": {
+      "get": {
+        "tags": [
+          "v1",
+          "v1",
+          "v1",
+          "v1",
+          "prediction"
+        ],
+        "summary": "Get Available Models",
+        "operationId": "get_available_models_api_v1_prediction_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Available Models Api V1 Prediction Models Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PredictorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/prediction/history": {
+      "get": {
+        "tags": [
+          "v1",
+          "v1",
+          "v1",
+          "v1",
+          "prediction"
+        ],
+        "summary": "Get Prediction History",
+        "operationId": "get_prediction_history_api_v1_prediction_history_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Prediction History Api V1 Prediction History Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PredictionBatchInfo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/prediction/make": {
+      "post": {
+        "tags": [
+          "v1",
+          "v1",
+          "v1",
+          "v1",
+          "prediction"
+        ],
+        "summary": "Make Predictions",
+        "operationId": "make_predictions_api_v1_prediction_make_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionBatchInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BaseUser": {
+        "title": "BaseUser",
+        "required": [
+          "payload",
+          "session"
+        ],
+        "type": "object",
+        "properties": {
+          "payload": {
+            "$ref": "#/components/schemas/Payload"
+          },
+          "session": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      },
+      "CreditsReport": {
+        "title": "CreditsReport",
+        "required": [
+          "total_credits_purchased",
+          "total_credits_spent"
+        ],
+        "type": "object",
+        "properties": {
+          "total_credits_purchased": {
+            "title": "Total Credits Purchased",
+            "type": "integer",
+            "description": "Total amount of credits purchased by users."
+          },
+          "total_credits_spent": {
+            "title": "Total Credits Spent",
+            "type": "integer",
+            "description": "Total amount of credits spent by users."
+          }
+        }
+      },
+      "DepositRequest": {
+        "title": "DepositRequest",
+        "required": [
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "exclusiveMinimum": 0.0,
+            "type": "integer",
+            "description": "The amount to be deposited. Must be greater than 0."
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "Payload": {
+        "title": "Payload",
+        "required": [
+          "id",
+          "email",
+          "name",
+          "is_superuser"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer",
+            "description": "Unique identifier of the user."
+          },
+          "email": {
+            "title": "Email",
+            "type": "string",
+            "description": "Email address of the user.",
+            "format": "email"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "Full name of the user."
+          },
+          "is_superuser": {
+            "title": "Is Superuser",
+            "type": "boolean",
+            "description": "Flag indicating whether the user is a superuser."
+          }
+        }
+      },
+      "PredictionBatchInfo": {
+        "title": "PredictionBatchInfo",
+        "required": [
+          "id",
+          "model_name",
+          "predictions",
+          "cost"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "predictions": {
+            "title": "Predictions",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PredictionInfo"
+            }
+          },
+          "timestamp": {
+            "title": "Timestamp",
+            "type": "string",
+            "description": "Timestamp of the prediction batch.",
+            "format": "date-time"
+          },
+          "cost": {
+            "title": "Cost",
+            "type": "integer",
+            "description": "Total cost of this batch of predictions."
+          }
+        }
+      },
+      "PredictionFeatures": {
+        "title": "PredictionFeatures",
+        "required": [
+          "merchant_id",
+          "cluster_id"
+        ],
+        "type": "object",
+        "properties": {
+          "merchant_id": {
+            "title": "Merchant Id",
+            "type": "integer",
+            "description": "Merchant ID for the prediction."
+          },
+          "cluster_id": {
+            "title": "Cluster Id",
+            "type": "integer",
+            "description": "Cluster ID for the prediction."
+          }
+        }
+      },
+      "PredictionInfo": {
+        "title": "PredictionInfo",
+        "required": [
+          "features",
+          "target"
+        ],
+        "type": "object",
+        "properties": {
+          "features": {
+            "$ref": "#/components/schemas/PredictionFeatures"
+          },
+          "target": {
+            "$ref": "#/components/schemas/PredictionTarget"
+          }
+        }
+      },
+      "PredictionRequest": {
+        "title": "PredictionRequest",
+        "required": [
+          "model_name",
+          "features"
+        ],
+        "type": "object",
+        "properties": {
+          "model_name": {
+            "title": "Model Name",
+            "type": "string",
+            "description": "Name of the prediction model to use.",
+            "example": "RandomForest"
+          },
+          "features": {
+            "title": "Features",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PredictionFeatures"
+            },
+            "description": "List of predictions to make."
+          }
+        }
+      },
+      "PredictionTarget": {
+        "title": "PredictionTarget",
+        "required": [
+          "category_id"
+        ],
+        "type": "object",
+        "properties": {
+          "category_id": {
+            "title": "Category Id",
+            "type": "integer",
+            "description": "Predicted Category ID."
+          },
+          "category_label": {
+            "title": "Category Label",
+            "type": "string",
+            "description": "Label of the predicted Category."
+          }
+        }
+      },
+      "PredictionsReport": {
+        "title": "PredictionsReport",
+        "required": [
+          "model_name",
+          "total_prediction_batches"
+        ],
+        "type": "object",
+        "properties": {
+          "model_name": {
+            "title": "Model Name",
+            "type": "string",
+            "description": "Name of the prediction model."
+          },
+          "total_prediction_batches": {
+            "title": "Total Prediction Batches",
+            "type": "integer",
+            "description": "Total number of prediction batches made using this model."
+          }
+        }
+      },
+      "PredictorInfo": {
+        "title": "PredictorInfo",
+        "required": [
+          "name",
+          "cost"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "Name of the predictor model."
+          },
+          "cost": {
+            "title": "Cost",
+            "type": "integer",
+            "description": "Cost associated with using this predictor model."
+          }
+        }
+      },
+      "Session": {
+        "title": "Session",
+        "required": [
+          "access_token",
+          "expiration"
+        ],
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string",
+            "description": "JWT access token for authentication."
+          },
+          "expiration": {
+            "title": "Expiration",
+            "type": "string",
+            "description": "Expiration time of the access token.",
+            "format": "date-time"
+          }
+        }
+      },
+      "SignInRequest": {
+        "title": "SignInRequest",
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string",
+            "description": "User email address.",
+            "format": "email"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string",
+            "description": "User password."
+          }
+        }
+      },
+      "SignUpRequest": {
+        "title": "SignUpRequest",
+        "required": [
+          "email",
+          "password",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string",
+            "description": "New user email address.",
+            "format": "email"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string",
+            "description": "New user password."
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "New user's full name."
+          }
+        }
+      },
+      "TransactionInfo": {
+        "title": "TransactionInfo",
+        "required": [
+          "id",
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer",
+            "description": "Unique identifier for the transaction."
+          },
+          "amount": {
+            "title": "Amount",
+            "type": "integer",
+            "description": "The transaction amount."
+          },
+          "timestamp": {
+            "title": "Timestamp",
+            "type": "string",
+            "description": "Timestamp of the transaction.",
+            "format": "date-time"
+          }
+        }
+      },
+      "UsersReport": {
+        "title": "UsersReport",
+        "required": [
+          "active_users"
+        ],
+        "type": "object",
+        "properties": {
+          "active_users": {
+            "title": "Active Users",
+            "type": "integer",
+            "description": "Total number of active users."
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWTBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
