@@ -26,7 +26,7 @@ MODELS_MAP = {
 redis_conn = redis.Redis(host='localhost', port=6379)
 q = Queue(connection=redis_conn)
 
-async def predict(prediction_id, model_name, model_cost, user_id, user_balance, **kwargs):
+async def predict(prediction_id, model_name, user_id, user_balance, *args, **kwargs):
     try:
         model = MODELS_MAP[model_name]
 

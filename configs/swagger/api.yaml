@@ -33,6 +33,34 @@ paths:
         401:
           description: Unauthorized - Invalid credentials
 
+  /auth/balance:
+    get:
+      summary: Check user balance
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user balance
+        401:
+          description: Unauthorized - Invalid token
+
+  /auth/me:
+    get:
+      summary: Check user info (debug)
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user id/name/email
+        401:
+          description: Unauthorized - Invalid token
+
   /predict:
     post:
       summary: Send data for prediction
@@ -75,58 +103,6 @@ paths:
         401:
           description: Unauthorized - Invalid token
 
-  /billing/balance:
-    get:
-      summary: Check user balance
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          type: string
-      responses:
-        200:
-          description: Current user balance
-        401:
-          description: Unauthorized - Invalid token
-
-    post:
-      summary: Add/spend coins
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          type: string
-        - in: body
-          name: BillingDetails
-          required: true
-          schema:
-            $ref: "#/definitions/Billing"
-      responses:
-        200:
-          description: Balance updated successfully
-        401:
-          description: Unauthorized - Invalid token
-        400:
-          description: Bad Request - Invalid input data
-
-  /history:
-    get:
-      summary: View user actions history
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          type: string
-      responses:
-        200:
-          description: Actions history list
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ActionsHistory'
-        401:
-          description: Unauthorized - Invalid token
-
 definitions:
   User:
     type: object
@@ -152,36 +128,3 @@ definitions:
     required:
       - email
       - password
-
-  Billing:
-    type: object
-    properties:
-      coins:
-        type: integer
-    required:
-      - coins
-
-  ActionsHistory:
-    type: object
-    properties:
-      ID:
-        type: integer
-        description: ID of operation
-      Type:
-        type: string
-        description: Type of billing operation
-      CoinsDiff:
-        type: integer
-        description: Number of coins added/spent
-      Description:
-        type: string
-        description: Description of billing operation
-      Time:
-        type: string
-        description: Date and time of billing operation
-    required:
-      - ID
-      - Type
-      - CoinsDiff
-      - Description
-      - Time

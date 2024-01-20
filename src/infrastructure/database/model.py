@@ -14,30 +14,6 @@ class Users(Base):
     password = Column(String)
     balance = Column(Integer, default=500)
 
-    def __repr__(self):
-        """
-        Get set: {name, email, password (salt)}
-        :returns: Set
-        """
-        return self.id, self.name, self.email, self.password, self.balance
-
-
-class Bills(Base):
-    __tablename__ = "bills"
-  
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer)
-    bill_type = Column(String)
-    coins_diff = Column(Integer)
-    description = Column(String)
-    time = Column(String)
-
-    def __repr__(self):
-        """
-        Get set: {id, user_id, bill_type, coins_diff, description, time}
-        :returns: Set
-        """
-        return self.id, self.user_id, self.bill_type, self.coins_diff, self.description, self.time
 
 
 class Models(Base):
@@ -47,13 +23,6 @@ class Models(Base):
     name = Column(String)
     model_type = Column(String)
     cost = Column(Integer)
-
-    def __repr__(self):
-        """
-        Get set: {id, name, model_type, cost}
-        :returns: Set
-        """
-        return self.id, self.name, self.model_type, self.cost
 
 
 class Predictions(Base):
@@ -67,10 +36,3 @@ class Predictions(Base):
     is_finished = Column(Boolean)
     error_info = Column(String)
     output = Column(JSON, nullable=True)
-
-    def __repr__(self):
-        """
-        Get set: {id, user_id, model_id, input_path, status, result}
-        :returns: Set
-        """
-        return self.id, self.user_id, self.model_id

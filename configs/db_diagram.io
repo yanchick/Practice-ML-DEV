@@ -6,32 +6,25 @@ Table Users {
   name string
   email string
   password string
-}
-
-Table Bills {
-  id integer [primary key]
-  user_id integer
-  type string
-  coins_diff integer
-  description string
-  time string
+  balance int
 }
 
 Table Predictions {
   id integer [primary key]
   user_id integer
   model_id string
-  input_path string
-  status string
-  result float
+  prediction_date string
+  is_success boolean
+  is_finished boolean
+  error_info string
+  output float
 }
 
 Table Models {
   id integer [primary key]
-  type string
+  model_type string
   name string
-  version int
-  prediction_cost int
+  cost int
 }
 
 

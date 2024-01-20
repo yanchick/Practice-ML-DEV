@@ -57,16 +57,7 @@ class PredictionService:
 
         return prediction_id
 
-    async def get_predictions(self, user_id: int, prediction_id: int = None,
-                              only_finished=False, only_succeed=False):
-
-        kwargs = {}
-        if only_finished:
-            kwargs["is_finished"] = True
-
-        if only_succeed:
-            kwargs["is_success"] = True
-
+    async def get_predictions(self, user_id: int, prediction_id: int = None):
         if prediction_id is None:
             predictions = await self.prediction_repo.find_by_options(user_id=user_id)
         else:
