@@ -1,7 +1,5 @@
 from typing import List
-from model.user import User
-from model.base_model import Transaction
-from model.base_model import Model
+from model.user import User, Transaction, Model
 from schema.model_schema import ModelInfo, Balance, Transaction as TransactionSchema
 from core.exceptions import ValidationError
 from core.security import verify_password

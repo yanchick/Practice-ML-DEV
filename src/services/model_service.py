@@ -1,6 +1,5 @@
 from typing import List, Dict, Any
-from model.base_model import Model
-from model.user import User
+from model.user import User, Model, Transaction
 from repository.user_repository import UserRepository
 from services.base_service import BaseService
 

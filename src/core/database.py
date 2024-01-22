@@ -6,8 +6,8 @@ from sqlalchemy import create_engine, orm
 
 from core.config import configs
 from model.base_model import BaseModel
-from model.base_model import Model, Transaction # Import BaseModel first
-from model.user import User
+#from model.base_model import Model, Transaction # Import BaseModel first
+from model.user import User, Model, Transaction
   # Now import the other models
 
 @contextmanager

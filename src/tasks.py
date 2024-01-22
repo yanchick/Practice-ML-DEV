@@ -1,7 +1,6 @@
 from celery import Celery
 from services.predict_service import PredictService
-from model.user import User
-from model.base_model import Model
+from model.user import User, Model
 from schema.model_schema import ModelInfo
 
 app = Celery('tasks', broker='redis://localhost:6379/0')

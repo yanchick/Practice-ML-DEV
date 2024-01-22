@@ -3,8 +3,8 @@ from typing import Callable, List
 
 from sqlalchemy.orm import Session
 
-from model.user import User
-from model.base_model import Transaction
+from model.user import User, Transaction, Model
+
 
 from repository.base_repository import BaseRepository
 
