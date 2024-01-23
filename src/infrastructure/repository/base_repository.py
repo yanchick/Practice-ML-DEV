@@ -23,9 +23,19 @@ class SQLAlchemyRepository(AbstractRepository):
 
     async def add(self, data: dict) -> int:
         async with async_session_maker() as session:
-            stmt = insert(self.model).values(**data).returning(self.model.id)
+            stmt = insert(self.model).values(**data)
+
+            # Check if the database supports the RETURNING clause
+            if session.bind.dialect.name.lower() != 'sqlite':
+                stmt = stmt.returning(self.model.id)
+
             res = await session.execute(stmt)
             await session.commit()
+
+            # For SQLite, use lastrowid to get the inserted ID
+            if session.bind.dialect.name.lower() == 'sqlite':
+                return res.lastrowid
+
             return res.scalar_one()
 
     async def update(self, data: dict, **kwargs):
