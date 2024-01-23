@@ -1,0 +1,1 @@
+from scripts.insert_models import insert_models
