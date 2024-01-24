@@ -7,8 +7,6 @@ from dash import callback_context
 app = Dash(__name__)
 
 # Define layout
-# Define layout
-# Define layout
 app.layout = html.Div(
     [
         html.H1("Сервис по предсказанию возрастной группы"),
@@ -20,14 +18,14 @@ app.layout = html.Div(
         dcc.Input(id="feature6", type="number", placeholder="Введите LBXGLT"),
         dcc.Input(id="feature7", type="number", placeholder="Введите LBXIN"),
         html.Button("Предсказать", id="submit-button"),
-        html.Br(),  # Add line break
-        html.Div(id="output-message", style={"margin-top": "20px"}),  # Add margin
-        html.Div(id="hidden-prediction-id", style={"display": "none"}),  # Hidden div to store prediction ID
-        html.Br(),  # Add line break
+        html.Br(),  
+        html.Div(id="output-message", style={"margin-top": "20px"}),  
+        html.Div(id="hidden-prediction-id", style={"display": "none"}),  
+        html.Br(),  
         dcc.Input(id="prediction-id", type="number", placeholder="Введите ID"),
         html.Button("Результат", id="get-prediction-button"),
-        html.Br(),  # Add line break
-        html.Div(id="predictions-output", style={"margin-top": "20px"})  # Add margin
+        html.Br(),  
+        html.Div(id="predictions-output", style={"margin-top": "20px"}) 
     ]
 )
 
@@ -118,7 +116,7 @@ def make_and_get_predictions(
 
         if predictions_response.status_code == 200:
 
-            # Extract the prediction result directly
+            # Extract the prediction result
 
             prediction_result = predictions_response.json().get("prediction_result", "No prediction result")
 
@@ -128,7 +126,7 @@ def make_and_get_predictions(
 
             predictions = f"Failed to fetch predictions. Status code: {predictions_response.status_code}"
 
-        # Return the predictions
+        
 
         return None, None, predictions
 

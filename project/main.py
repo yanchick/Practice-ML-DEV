@@ -80,7 +80,7 @@ def perform_prediction(prediction_id: int):
         # Perform prediction using the loaded machine learning model
         prediction_result = model.predict([features])[0]
 
-        # Convert the prediction result to string if needed
+        # Convert the prediction result to string 
         prediction_result = str(prediction_result)
 
         # Update the prediction result in the database
