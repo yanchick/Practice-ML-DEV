@@ -1,0 +1,5 @@
+Flask
+catboost
+scikit-learn
+psycopg2-binary
+pyyaml

@@ -1,0 +1,108 @@
+<!-- account_info.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Information</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome, {{ username }}!</h1>
+            <a href="{{ url_for('index') }}" class="back-link">Back</a>
+            <a href="/logout" class="logout-link">Logout</a>
+            <a href="/delete_account" class="delete-account-link">Delete account</a>
+        </header>
+
+        <!-- User Information Tab -->
+        <h2>User Information:</h2>
+        <p>Username: {{ user_info[2] }}</p>
+        <p>UserID: {{ user_info[0] }}</p>
+        <p>Created at {{ user_info[1].strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p>Balance: {{ last_balance[1] }} (Updated at {{ last_balance[2].strftime('%Y-%m-%d %H:%M:%S') }})</p>
+
+        <!-- Change Password Tab -->
+        <h2 class="toggle-section" onclick="toggleSection('change-password-section')">Change Password:</h2>
+        <div id="change-password-section" class="hidden">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <form action="/change_password" method="post">
+                <label for="old_password">Old Password:</label>
+                <input type="password" name="old_password" required><br>
+                <label for="new_password">New Password:</label>
+                <input type="password" name="new_password" required><br>
+                <label for="confirm_password">Confirm New Password:</label>
+                <input type="password" name="confirm_password" required><br>
+                <button type="submit">Change Password</button>
+            </form>
+        </div>
+
+        <!-- Prediction History Tab -->
+        <h2 class="toggle-section" onclick="toggleSection('prediction-history-section')">Prediction History:</h2>
+        <div id="prediction-history-section" class="hidden">
+            {% if prediction_history %}
+                <ul>
+                    {% for request in prediction_history %}
+                        <li>
+                            <strong>Time:</strong> {{ request[3].strftime('%Y-%m-%d %H:%M:%S') }} |
+                            <strong>Description:</strong> {{ request[0] }} |
+                            <strong>Model:</strong> {{ request[1] }} |
+                            <strong>Prediction:</strong> {{ request[2] }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>History is empty.</p>
+            {% endif %}
+        </div>
+
+        <!-- Transaction History Tab -->
+        <h2 class="toggle-section" onclick="toggleSection('transaction-history-section')">Transaction History:</h2>
+        <div id="transaction-history-section" class="hidden">
+            {% if transaction_history %}
+                <ul>
+                    {% for transaction in transaction_history %}
+                        <li>
+                            <strong>Time:</strong> {{ transaction[3].strftime('%Y-%m-%d %H:%M:%S') }} |
+                            <strong>Transaction:</strong> {{ transaction[1] }}{{ transaction[0] }} |
+                            <strong>Balance:</strong> {{ transaction[2] }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Transaction history is empty.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to toggle section visibility
+        function toggleSection(sectionId) {
+            var section = document.getElementById(sectionId);
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        // JavaScript to show a confirmation dialog before deleting the account
+        document.querySelector('.delete-account-link').addEventListener('click', function () {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                window.location.href = '/delete_account';
+            }
+        });
+    </script>
+</body>
+</html>
