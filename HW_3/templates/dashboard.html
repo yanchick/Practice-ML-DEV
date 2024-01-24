@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome, {{ username }}!</h1>
+            <a href="/logout" class="logout-link">Logout</a>
+        </header>
+
+        <p>Balance: {{ balance }} credits</p>
+
+        <form action="/make_prediction" method="post">
+            <label for="selected_model">Select Model:</label>
+            <select id="selected_model" name="selected_model">
+                <option value="log_reg">Logistic Regression (5 credits)</option>
+                <option value="naive_bayes">Naive Bayes (10 credits)</option>
+                <option value="catboost">CatBoost (15 credits)</option>
+            </select>
+            <br>
+            <label for="input_description">Product Description:</label>
+            <input type="text" id="input_description" name="input_description" required>
+            <button type="submit">Make Prediction</button>
+        </form>
+
+        {% if prediction %}
+        <p>Prediction: {{ prediction }}</p>
+        {% endif %}
+
+        {% if error %}
+        <p style="color: red;">Error: {{ error }}</p>
+        {% endif %}
+
+        <h2>Request History:</h2>
+        {% if request_history %}
+        <ul>
+            {% for request in request_history %}
+            <li>
+                <strong>Username:</strong> {{ request['username'] }} |
+                <strong>Description:</strong> {{ request['input_description'] }} |
+                <strong>Model:</strong> {{ request['Model'] }} |
+                <strong>Prediction:</strong> {{ request['prediction'] }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>History is empty.</p>
+        {% endif %}
+    </div>
+    </body>
+
+</html>

@@ -1,0 +1,146 @@
+body {
+    font-family: 'Helvetica', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+}
+
+h1 {
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.logout-link {
+    position: absolute;
+    top: 20px;
+    right: 10px; 
+    color: #fff;
+    text-decoration: none;
+}
+
+.logout-link:hover {
+    color: #ccc;
+}
+
+.delete-account-link {
+    position: absolute;
+    top: 70px;
+    left: 10px; 
+    color: #fff;
+    text-decoration: none;
+}
+
+.delete-account-link:hover {
+    color: #ccc;
+}
+
+.account-info-link {
+    position: absolute;
+    top: 70px;
+    right: 10px; 
+    color: #fff;
+    text-decoration: none;
+}
+
+.account-info-link:hover {
+    color: #ccc;
+}
+
+.back-link {
+    position: absolute;
+    top: 70px;
+    right: 10px; 
+    color: #fff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: #ccc;
+}
+
+form {
+    margin-top: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+select,
+button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+button {
+    cursor: pointer;
+    background-color: #333;
+    color: #fff;
+    border: none;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+
+.hidden {
+    display: none;
+}
+
+.toggle-section {
+    cursor: pointer;
+    transition: color 0.5s ease; /* Add transition for color change on hover */
+}
+
+.toggle-section:hover {
+    color: rgb(95, 95, 95); /* Change color on hover */
+}
