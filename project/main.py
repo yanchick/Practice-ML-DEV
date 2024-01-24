@@ -8,8 +8,10 @@ from datetime import datetime
 import joblib
 from typing import Optional
 
+# Load the machine learning model
 model = joblib.load("LR.pkl")
 
+# Pydantic model for input validation
 class PredictionInput(BaseModel):
     RIAGENDR: float
     PAQ605: float
@@ -19,7 +21,7 @@ class PredictionInput(BaseModel):
     LBXGLT: float
     LBXIN: float
 
-
+# SQLAlchemy model for storing data in the database
 Base = declarative_base()
 
 class PredictionData(Base):
@@ -35,20 +37,22 @@ class PredictionData(Base):
     prediction_result = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-
+# Initialize FastAPI app
 app = FastAPI()
 
-
+# Initialize SQLAlchemy database
 DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
-
+# Initialize Celery
 celery = Celery(
     'tasks',
     broker='pyamqp://guest:guest@localhost//',
     backend='rpc://'
 )
+
+# Dependency to get the database session
 def get_db():
     db = Session(engine)
     try:
@@ -61,6 +65,8 @@ def perform_prediction(prediction_id: int):
     db = Session(engine)
     try:
         prediction_data = db.query(PredictionData).filter(PredictionData.id == prediction_id).first()
+
+        # Extract features from the database
         features = [
             prediction_data.RIAGENDR,
             prediction_data.PAQ605,
@@ -70,28 +76,40 @@ def perform_prediction(prediction_id: int):
             prediction_data.LBXGLT,
             prediction_data.LBXIN
         ]
+
+        # Perform prediction using the loaded machine learning model
         prediction_result = model.predict([features])[0]
+
+        # Convert the prediction result to string if needed
         prediction_result = str(prediction_result)
+
+        # Update the prediction result in the database
         prediction_data.prediction_result = prediction_result
         db.commit()
+
         return prediction_result
     finally:
         db.close()
 
-
+# Endpoint to upload data for prediction
 @app.post("/upload-data", response_model=None)
 def upload_data(data: PredictionInput, db: Session = Depends(get_db)):
+    # Store the data in the database
     db_data = PredictionData(**data.dict())
     db.add(db_data)
     db.commit()
     db.refresh(db_data)
-    perform_prediction.apply_async(args=[db_data.id], countdown=5)
+
+    # Send the prediction task to Celery
+    perform_prediction.apply_async(args=[db_data.id], countdown=5)  # Delayed execution after 5 seconds
+
     return db_data
 
-
+# Endpoint to get prediction result
 @app.get("/get-prediction-result/{prediction_id}")
 def get_prediction_result(prediction_id: int, db: Session = Depends(get_db)):
     prediction_data = db.query(PredictionData).filter(PredictionData.id == prediction_id).first()
+
     if prediction_data:
         return {
             "prediction_result": prediction_data.prediction_result,
