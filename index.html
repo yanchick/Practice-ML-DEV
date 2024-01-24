@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Lifespan</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .column {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        #balance {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="column">
+        <h1>Account</h1>
+
+        <!-- Login Form -->
+        <div>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" name="loginUsername" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
+                <button type="button" onclick="login()">Login</button>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <label for="registerName">Name:</label>
+                <input type="text" id="registerName" name="registerName" required>
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" name="registerEmail" required>
+                <label for="registerPassword">Password:</label>
+                <input type="password" id="registerPassword" name="registerPassword" required>
+                <button type="button" onclick="register()">Register</button>
+            </form>
+        </div>
+
+        <!-- Get Me Button -->
+        <div>
+            <h2>User Info</h2>
+            <button type="button" onclick="getUserInfo()">Get Me</button>
+            <p id="balance">Balance: Loading...</p>
+        </div>
+    </div>
+
+    <div class="column">
+        <h1>Liver Disease Life Expectancy Prediction v0.3</h1>
+
+        <!-- Model Selection -->
+        <div>
+            <h2>Choose Model</h2>
+            <select id="modelSelection">
+                <option value="lasso">Lasso: 100 C</option>
+            </select>
+        </div>
+
+        <!-- Upload CSV Form -->
+        <div>
+            <h2>Upload CSV File</h2>
+            <form id="uploadForm">
+                <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                <button type="button" onclick="uploadFile()">Predict</button>
+            </form>
+        </div>
+
+        <!-- Check Prediction Status -->
+        <div>
+            <h2>Check Prediction Status</h2>
+            <form id="statusForm">
+                <label for="predictionId">Prediction ID:</label>
+                <input type="text" id="predictionId" name="predictionId" required>
+                <button type="button" onclick="checkStatus()">Check Status</button>
+            </form>
+            <p id="predictionStatus">Status: Not checked</p>
+            <p id="predictionResult">Result: N/A</p>
+        </div>
+    </div>
+
+    <script>
+        let accessToken;  // Variable to store the access token
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const response = await fetch('http://localhost:7999/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: username,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            accessToken = data.access_token;  // Save the access token
+
+            alert('Successfully logged in!');
+            console.log(data);
+            getBalance();
+        }
+
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            const response = await fetch('http://localhost:7999/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            accessToken = data.access_token;  // Save the access token
+
+            alert('Successfully registered!');
+            console.log(data);
+            getBalance();
+        }
+
+        async function getUserInfo() {
+            const response = await fetch('http://localhost:7999/api/auth/me', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+            console.log(data);
+            alert(data);
+            getBalance();
+        }
+
+        async function getBalance() {
+            const response = await fetch('http://localhost:7999/api/auth/balance', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+            document.getElementById('balance').innerText = `Balance: ${data.balance} coins`;
+        }
+
+        async function uploadFile() {
+            const model = document.getElementById('modelSelection').value;
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`http://localhost:7999/api/predict/${model}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            alert(`Prediction ID: ${data}`);
+            getBalance();  // Update balance after making a prediction
+        }
+
+        async function checkStatus() {
+            const predictionId = document.getElementById('predictionId').value;
+
+            const response = await fetch(`http://localhost:7999/api/predict/${predictionId}`, {
+                method: 'GET',  // Ensure the correct method is specified
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+
+            document.getElementById('predictionStatus').innerText = `Is ready: ${data.is_finished}`;
+            document.getElementById('predictionResult').innerText = `Result: ${data.output || 'N/A'}`;
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+swagger: "2.0"
+info:
+  title: ML Service API - Cirrhosis Lifespan Prediction
+  version: 1.0.0
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid input data
+
+  /auth/login:
+    post:
+      summary: Authenticate an existing user
+      parameters:
+        - in: body
+          name: loginDetails
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        200:
+          description: Logged in successfully
+        401:
+          description: Unauthorized - Invalid credentials
+
+  /auth/balance:
+    get:
+      summary: Check user balance
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user balance
+        401:
+          description: Unauthorized - Invalid token
+
+  /auth/me:
+    get:
+      summary: Check user info (debug)
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user id/name/email
+        401:
+          description: Unauthorized - Invalid token
+
+  /predict:
+    post:
+      summary: Send data for prediction
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+        - in: formData
+          name: modelName
+          required: true
+          type: string
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Input sent successfully
+        400:
+          description: Bad Request - Inconsistent data
+
+    get:
+      summary: Try to get results of model prediction
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Model output retrieved successfully
+          schema:
+            type: number
+            format: float
+        202:
+          description: Prediction is still in progress
+        401:
+          description: Unauthorized - Invalid token
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - name
+      - email
+      - password
+
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+      - email
+      - password
