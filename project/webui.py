@@ -3,10 +3,10 @@ import requests
 from dash.exceptions import PreventUpdate
 from dash import callback_context
 
-# Initialize Dash app
+
 app = Dash(__name__)
 
-# Define layout
+
 app.layout = html.Div(
     [
         html.H1("Сервис по предсказанию возрастной группы"),
@@ -18,15 +18,15 @@ app.layout = html.Div(
         dcc.Input(id="feature6", type="number", placeholder="Введите LBXGLT"),
         dcc.Input(id="feature7", type="number", placeholder="Введите LBXIN"),
         html.Button("Предсказать", id="submit-button"),
-        html.Div(id="hidden-prediction-id", style={"display": "none"}),  # Hidden div to store prediction ID
+        html.Div(id="hidden-prediction-id", style={"display": "none"}),
         dcc.Input(id="prediction-id", type="number", placeholder="Введите ID"),
         html.Button("Результат", id="get-prediction-button"),
         html.Div(id="output-message"),
-        html.Div(id="predictions-output")  # Add a new HTML div for displaying predictions
+        html.Div(id="predictions-output")
     ]
 )
 
-# Define callback to interact with FastAPI
+
 @app.callback(
     [
         Output("output-message", "children"),
@@ -70,7 +70,6 @@ def make_and_get_predictions(
         except ValueError:
             return "Invalid input. Please enter numeric values for features.", None, None
 
-        # Call FastAPI endpoint to upload data
         response = requests.post(
             "http://127.0.0.1:8000/upload-data",
             json={
@@ -88,8 +87,6 @@ def make_and_get_predictions(
             result = response.json()
             prediction_result = result.get("prediction_result", "No prediction result")
             prediction_id = result.get("id")
-
-            # Return both the output message and the stored prediction ID
             return (
                 f"Данные успешно загружены. Выполняется предсказание. Чтобы получить результат, введите номер ID и нажмите кнопку 'Результат'. ID: {prediction_id}",
                 prediction_id,
@@ -101,28 +98,13 @@ def make_and_get_predictions(
                 None,
                 None
             )
-
-
     elif triggered_id == "get-prediction-button" and prediction_id is not None:
-
-        # Call FastAPI endpoint to get predictions using the provided prediction ID
-
         predictions_response = requests.get(f"http://127.0.0.1:8000/get-prediction-result/{int(prediction_id)}")
-
         if predictions_response.status_code == 200:
-
-            # Extract the prediction result directly
-
             prediction_result = predictions_response.json().get("prediction_result", "No prediction result")
-
             predictions = f"Результат предсказания: {prediction_result}"
-
         else:
-
             predictions = f"Failed to fetch predictions. Status code: {predictions_response.status_code}"
-
-        # Return the predictions
-
         return None, None, predictions
 
 if __name__ == "__main__":
