@@ -121,9 +121,9 @@ Running on <u>http://127.0.0.1:5000</u> (Пример адреса)
 # 9. Предсказание
 
 ## 9.1 В выподающем окне **Select Model** выбрать одну из трех моделей:
-    - **Logistic Regression** (5 credits)
-    - **Naive Bayes**         (10 credits)
-    - **CatBoost**            (15 credits)
+- **Logistic Regression** (5 credits)
+- **Naive Bayes**         (10 credits)
+- **CatBoost**            (15 credits)
 
 Стоит обратить внимание что стоимость предсказания у каждой модели разная.
 
