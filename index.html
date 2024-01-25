@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta username="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Lifespan</title>
+</head>
+<body>
+
+    <div class="column">
+        <h1>Account</h1>
+
+        <!-- Login Form -->
+        <div>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" username="loginUsername" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" username="loginPassword" required>
+                <button type="button" onclick="login()">Login</button>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <label for="registerName">Username:</label>
+                <input type="text" id="registerName" username="registerName" required>
+                <label for="registerPassword">Password:</label>
+                <input type="password" id="registerPassword" username="registerPassword" required>
+                <button type="button" onclick="register()">Register</button>
+            </form>
+        </div>
+
+        <!-- Get Me Button -->
+        <div>
+            <h2>User Info</h2>
+            <button type="button" onclick="getUserInfo()">Get Me</button>
+            <p id="balance">Balance: Loading...</p>
+        </div>
+    </div>
+
+    <div class="column">
+        <h1>Prediction</h1>
+        <!-- Model Selection -->
+        <div>
+            <h2>Choose Model</h2>
+            <select id="modelSelection">
+                <option value="SVC">SVC: 100 C</option>
+                <option value="RandomForest">RandomForest: 250 C</option>
+                <option value="Catboost">Catboost: 500 C</option>
+            </select>
+        </div>
+
+        <!-- Upload CSV Form -->
+        <div>
+            <h2>Upload CSV File</h2>
+            <form id="uploadForm">
+                <input type="file" id="csvFile" username="csvFile" accept=".csv" required>
+                <button type="button" onclick="uploadFile()">Predict</button>
+            </form>
+        </div>
+
+        <!-- Check Prediction Status -->
+        <div>
+            <h2>Check Prediction Status</h2>
+            <form id="statusForm">
+                <label for="predictionId">Prediction ID:</label>
+                <input type="text" id="predictionId" username="predictionId" required>
+                <button type="button" onclick="checkStatus()">Check Status</button>
+            </form>
+            <p id="predictionStatus">Status: Not checked</p>
+            <p id="predictionResult">Result: N/A</p>
+        </div>
+    </div>
+
+    <script>
+        let accessToken;  // Variable to store the access token
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const response = await fetch('http://localhost:8001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            accessToken = data.access_token;  // Save the access token
+
+            alert('Successfully logged in!');
+            console.log(data);
+            getBalance();
+        }
+
+        async function register() {
+            const username = document.getElementById('registerName').value;
+            const password = document.getElementById('registerPassword').value;
+
+            const response = await fetch('http://localhost:8001/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            accessToken = data.access_token;  // Save the access token
+
+            alert('Successfully registered!');
+            console.log(data);
+            getBalance();
+        }
+
+        async function getUserInfo() {
+            const response = await fetch('http://localhost:8001/api/auth/me', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+            console.log(data);
+            alert(data);
+            getBalance();
+        }
+
+        async function getBalance() {
+            const response = await fetch('http://localhost:8001/api/auth/balance', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+            document.getElementById('balance').innerText = `Balance: ${data.balance} coins`;
+        }
+
+        async function uploadFile() {
+            const model = document.getElementById('modelSelection').value;
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`http://localhost:8001/api/predict/${model}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            alert(`Prediction ID: ${data}`);
+            getBalance();  // Update balance after making a prediction
+        }
+
+        async function checkStatus() {
+            const predictionId = document.getElementById('predictionId').value;
+
+            const response = await fetch(`http://localhost:8001/api/predict/${predictionId}`, {
+                method: 'GET',  // Ensure the correct method is specified
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,  // Include the access token
+                },
+            });
+
+            const data = await response.json();
+
+            document.getElementById('predictionStatus').innerText = `Is ready: ${data.is_finished}`;
+            document.getElementById('predictionResult').innerText = `Result: ${data.output || 'N/A'}`;
+        }
+    </script>
+
+</body>
+</html>

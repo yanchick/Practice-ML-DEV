@@ -1,0 +1,127 @@
+swagger: "2.0"
+info:
+  title: Practice-ML-DEV - Cirrhosis Lifespan Prediction
+  version: 1.0.0
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid username or password
+
+  /login:
+    post:
+      summary: Log in a user
+      parameters:
+        - in: body
+          name: loginDetails
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        200:
+          description: Logged in successfully
+        401:
+          description: Invalid username or password
+
+  /balance:
+    get:
+      summary: Check user balance
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user balance
+        401:
+          description: Invalid data
+
+  /me:
+    get:
+      summary: Check user info
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Current user id/name/password
+        401:
+          description: Invalid data
+
+  /predict:
+    post:
+      summary: Send data for prediction
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          required: true
+          type: file
+        - in: formData
+          name: modelName
+          required: true
+          type: string
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Input sent successfully
+        400:
+          description: Inconsistent data
+
+    get:
+      summary: Get results of model prediction
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          type: string
+      responses:
+        200:
+          description: Model output retrieved successfully
+          schema:
+            type: number
+            format: float
+        202:
+          description: Prediction is still in progress
+        401:
+          description: Invalid data
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+      - name
+      - password
+
+  Login:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+    required:
+      - username
+      - password
