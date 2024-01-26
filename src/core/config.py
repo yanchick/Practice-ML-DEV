@@ -1,13 +1,9 @@
 import os
-from typing import List
-
+from typing import List, ClassVar
 from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 load_dotenv()
-
-ENV: str = ""
-
 
 class Configs(BaseSettings):
     # base
@@ -48,22 +44,21 @@ class Configs(BaseSettings):
 
     if DB_ENGINE == "postgresql":
         DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
-        DATABASE_URI = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
-           db_engine=DB_ENGINE,
-           user=DB_USER,
-           password=DB_PASSWORD,
-           host=DB_HOST,
-           port=DB_PORT,
-           database=ENV_DATABASE_MAPPER[ENV],
+        DATABASE_URI: ClassVar[str] = DATABASE_URI_FORMAT.format(
+            db_engine=DB_ENGINE,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            database=ENV_DATABASE_MAPPER[ENV],
         )
-
     else:
-        DATABASE_URI = "sqlite:///{dbfile}".format(dbfile=DB_FILE)
-
+        DATABASE_URI: ClassVar[str] = f"sqlite:///{DB_FILE}"
     # find query
-    PAGE = 1
-    PAGE_SIZE = 20
-    ORDERING = "-id"
+    PAGE: int = 1
+    PAGE_SIZE: int = 20
+    ORDERING: str = "-id"
+    DEBUG: bool = False
 
     class Config:
         case_sensitive = True

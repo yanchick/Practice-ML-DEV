@@ -5,7 +5,9 @@ from api.v1.routes import routers as v1_routers
 from core.config import configs
 from core.container import Container
 from util.class_object import singleton
+from core.database import init_db
 
+#init_db()
 
 @singleton
 class AppCreator:
@@ -15,6 +17,7 @@ class AppCreator:
             title=configs.PROJECT_NAME,
             openapi_url=f"{configs.API}/openapi.json",
             version="0.0.1",
+            debug=configs.DEBUG
         )
 
         # set db and container
@@ -39,8 +42,19 @@ class AppCreator:
 
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 
+    def create_tables(self):
+        # Create tables using SQLAlchemy's create_all
+        self.db.create_all()
+
 
 app_creator = AppCreator()
 app = app_creator.app
 db = app_creator.db
 container = app_creator.container
+
+from celery import Celery
+from celery_config import CELERY_BROKER_URL
+
+celery = Celery('tasks', broker=CELERY_BROKER_URL)
+
+celery.autodiscover_tasks(['tasks'])

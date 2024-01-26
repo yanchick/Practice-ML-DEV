@@ -9,6 +9,7 @@ from  core.exceptions import DuplicatedError, NotFoundError
 from  util.query_builder import dict_to_sqlalchemy_filter_options
 
 
+
 class BaseRepository:
     def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], model) -> None:
         self.session_factory = session_factory
@@ -94,3 +95,6 @@ class BaseRepository:
                 raise NotFoundError(detail=f"not found id : {id}")
             session.delete(query)
             session.commit()
+    def get_all_models(self):
+        with self.session_factory() as session:
+            return session.query(self.model).all()

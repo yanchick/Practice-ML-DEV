@@ -1,7 +1,6 @@
 from typing import Optional
 
-from pydantic.main import ModelMetaclass
-
+from pydantic._internal._model_construction import ModelMetaclass
 
 class AllOptional(ModelMetaclass):
     def __new__(self, name, bases, namespaces, **kwargs):

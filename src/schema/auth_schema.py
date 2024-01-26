@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from entities.user_schema import User
+from .user_schema import User
 
 
 class SignIn(BaseModel):
@@ -22,10 +22,19 @@ class Payload(BaseModel):
     name: str
     is_superuser: bool
 
+    class Config:
+        arbitrary_types_allowed = True
+        from_attributes = True
+        model_config = {'protected_namespaces': ()}
+
 
 class SignInResponse(BaseModel):
     access_token: str
     expiration: datetime
     user_info: User
+
+    class Config:
+        from_attributes = True
+        model_config = {'protected_namespaces': ()}
 
 

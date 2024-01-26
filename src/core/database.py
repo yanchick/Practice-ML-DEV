@@ -1,23 +1,22 @@
-from contextlib import AbstractContextManager, contextmanager
-from typing import Any, Callable
+# core/database.py
 
-from sqlalchemy import create_engine, orm
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import Session
+from contextlib import AbstractContextManager, contextmanager
+from sqlalchemy import create_engine, orm
 
-from model.user import User
+from core.config import configs
+from model.base_model import BaseModel
+#from model.base_model import Model, Transaction # Import BaseModel first
+from model.user import User, Model, Transaction
+  # Now import the other models
 
-
-@as_declarative()
-class BaseModel:
-    id: Any
-    __name__: str
-
-    # Generate __tablename__ automatically
-    @declared_attr
-    def __tablename__(cls) -> str:
-        return cls.__name__.lower()
-
+@contextmanager
+def get_db() -> AbstractContextManager[Session]:
+    db = Database(configs.DATABASE_URI)
+    try:
+        yield db
+    finally:
+        db.close()
 
 class Database:
     def __init__(self, db_url: str) -> None:
@@ -32,9 +31,12 @@ class Database:
 
     def create_database(self) -> None:
         User.metadata.create_all(self._engine)
+        Transaction.metadata.create_all(self._engine)
+        Model.metadata.create_all(self._engine)
+
 
     @contextmanager
-    def session(self) -> Callable[..., AbstractContextManager[Session]]:
+    def session(self) -> AbstractContextManager[Session]:
         session: Session = self._session_factory()
         try:
             yield session
@@ -43,3 +45,30 @@ class Database:
             raise
         finally:
             session.close()
+
+
+def init_db():
+    # Create an instance of the Database class
+    db = Database(configs.DATABASE_URI)
+
+    # Create the database tables
+    db.create_database()
+
+    # Optionally, add additional initialization logic here
+
+#if __name__ == "__main__":
+    # Run init_db when this script is executed directly
+    #init_db()
+# core/database.py
+
+# ... (previous code)
+
+@contextmanager
+def get_session() -> AbstractContextManager[Session]:
+    db = Database(configs.DATABASE_URI)
+    try:
+        yield db
+    finally:
+        db.close()
+
+# ... (remaining code)
