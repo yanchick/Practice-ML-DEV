@@ -3,35 +3,82 @@ import requests
 from dash.exceptions import PreventUpdate
 from dash import callback_context
 
-# Initialize Dash app
+
 app = Dash(__name__)
 
-# Define layout
+
 app.layout = html.Div(
     [
-        html.H1("Сервис по предсказанию возрастной группы"),
-        dcc.Input(id="feature1", type="number", placeholder="Введите RIAGENDR"),
-        dcc.Input(id="feature2", type="number", placeholder="Введите PAQ605"),
-        dcc.Input(id="feature3", type="number", placeholder="Введите BMXBMI"),
-        dcc.Input(id="feature4", type="number", placeholder="Введите LBXGLU"),
-        dcc.Input(id="feature5", type="number", placeholder="Введите DIQ010"),
-        dcc.Input(id="feature6", type="number", placeholder="Введите LBXGLT"),
-        dcc.Input(id="feature7", type="number", placeholder="Введите LBXIN"),
-        html.Button("Предсказать", id="submit-button"),
-        html.Br(),  
-        html.Div(id="output-message", style={"margin-top": "20px"}),  
-        html.Div(id="hidden-prediction-id", style={"display": "none"}),  
-        html.Br(),  
-        dcc.Input(id="prediction-id", type="number", placeholder="Введите ID"),
-        html.Button("Результат", id="get-prediction-button"),
-        html.Br(),  
-        html.Div(id="predictions-output", style={"margin-top": "20px"}) 
+        html.Div(id="login-register", children=[
+            dcc.Input(id="username", type="text", placeholder="Enter username"),
+            dcc.Input(id="password", type="password", placeholder="Enter password"),
+            html.Button("Sign In", id="sign-in-button"),
+            html.Button("Register", id="register-button"),
+            html.Div(id="login-message"),
+        ]),
+        html.Div(id="prediction-service", style={"display": "none"}, children=[
+            html.H1("Prediction Service"),
+            dcc.Input(id="feature1", type="number", placeholder="Enter RIAGENDR"),
+            dcc.Input(id="feature2", type="number", placeholder="Enter PAQ605"),
+            dcc.Input(id="feature3", type="number", placeholder="Enter BMXBMI"),
+            dcc.Input(id="feature4", type="number", placeholder="Enter LBXGLU"),
+            dcc.Input(id="feature5", type="number", placeholder="Enter DIQ010"),
+            dcc.Input(id="feature6", type="number", placeholder="Enter LBXGLT"),
+            dcc.Input(id="feature7", type="number", placeholder="Enter LBXIN"),
+            html.Button("Predict", id="predict-button"),
+            html.Br(),
+            html.Div(id="output-message", style={"margin-top": "20px"}),
+            html.Div(id="hidden-prediction-id", style={"display": "none"}),
+            html.Br(),
+            dcc.Input(id="prediction-id", type="number", placeholder="Enter ID"),
+            html.Button("Get Result", id="get-result-button"),
+            html.Br(),
+            html.Div(id="predictions-output", style={"margin-top": "20px"})
+        ])
     ]
 )
 
 
 
-# Define callback to interact with FastAPI
+@app.callback(
+    Output("login-message", "children"),
+    Output("prediction-service", "style"),
+    Input("sign-in-button", "n_clicks"),
+    Input("register-button", "n_clicks"),
+    State("username", "value"),
+    State("password", "value"),
+    prevent_initial_call=True
+)
+def authenticate_user(sign_in_clicks, register_clicks, username, password):
+    ctx = callback_context
+    if not ctx.triggered_id:
+        raise PreventUpdate
+
+    triggered_id = ctx.triggered_id.split(".")[0]
+
+    if triggered_id == "register-button":
+        response = requests.post(
+            "http://127.0.0.1:8000/sign-up",
+            json={"username": username, "password": password}
+        )
+        if response.status_code == 200:
+            return "Registration successful! You can now sign in.", {"display": "block"}
+        else:
+            return "Registration failed. Please try again.", {"display": "none"}
+
+    elif triggered_id == "sign-in-button":
+        response = requests.post(
+            "http://127.0.0.1:8000/sign-in",
+            json={"username": username, "password": password}
+        )
+        if response.status_code == 200:
+            return "Welcome! You are now signed in.", {"display": "block"}
+        else:
+            return "Invalid username or password. Please try again.", {"display": "none"}
+
+
+
+
 @app.callback(
     [
         Output("output-message", "children"),
@@ -39,8 +86,8 @@ app.layout = html.Div(
         Output("predictions-output", "children"),
     ],
     [
-        Input("submit-button", "n_clicks"),
-        Input("get-prediction-button", "n_clicks"),
+        Input("predict-button", "n_clicks"),
+        Input("get-result-button", "n_clicks"),
     ],
     [
         State("feature1", "value"),
@@ -63,7 +110,7 @@ def make_and_get_predictions(
 
     triggered_id = ctx.triggered_id.split(".")[0]
 
-    if triggered_id == "submit-button":
+    if triggered_id == "predict-button":
         try:
             feature1 = float(feature1)
             feature2 = float(feature2)
@@ -75,7 +122,7 @@ def make_and_get_predictions(
         except ValueError:
             return "Invalid input. Please enter numeric values for features.", None, None
 
-        # Call FastAPI endpoint to upload data
+
         response = requests.post(
             "http://127.0.0.1:8000/upload-data",
             json={
@@ -94,7 +141,7 @@ def make_and_get_predictions(
             prediction_result = result.get("prediction_result", "No prediction result")
             prediction_id = result.get("id")
 
-            # Return both the output message and the stored prediction ID
+
             return (
                 f"Данные успешно загружены. Выполняется предсказание. Чтобы получить результат, введите номер ID и нажмите кнопку 'Результат'. ID: {prediction_id}",
                 prediction_id,
@@ -108,26 +155,14 @@ def make_and_get_predictions(
             )
 
 
-    elif triggered_id == "get-prediction-button" and prediction_id is not None:
-
-        # Call FastAPI endpoint to get predictions using the provided prediction ID
-
+    elif triggered_id == "get-result-button" and prediction_id is not None:
         predictions_response = requests.get(f"http://127.0.0.1:8000/get-prediction-result/{int(prediction_id)}")
 
         if predictions_response.status_code == 200:
-
-            # Extract the prediction result
-
             prediction_result = predictions_response.json().get("prediction_result", "No prediction result")
-
             predictions = f"Результат предсказания: {prediction_result}"
-
         else:
-
             predictions = f"Failed to fetch predictions. Status code: {predictions_response.status_code}"
-
-        
-
         return None, None, predictions
 
 if __name__ == "__main__":
