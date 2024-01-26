@@ -5,6 +5,7 @@ import os
 
 
 redis_url = os.getenv('BROKER_URL')
+print(f"MESSAGE : {redis_url}")
 # Create a Celery instance
 celery = Celery(
     'tasks',  # The name of the current module (this file)

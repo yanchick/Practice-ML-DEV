@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class UserResponse(BaseModel):
-    id: int
+    id: str
     username: str
     credits: int
     
@@ -10,9 +10,10 @@ class ModelsResponse(BaseModel):
     name: str
 
 class ActionsResponse(BaseModel):
-    model: str
-    user: int
+    user: str
+    model: int
     time: datetime
+    data: str
     
 class ModelsResponse(BaseModel):
     id: int

@@ -8,11 +8,8 @@ def register_user(db: Session, user: UserResponse):
 def get_user(db: Session, user_id: int):
     return service.get_user(db, user_id)
 
-def add_credits(db: Session, user_id: int, credits: int):
-    return service.add_user_credits(db, user_id, credits)
+def get_user_actions(db: Session, user_id: int):
+    return service.get_user_actions(db, user_id)
 
-def substruct_credits(db: Session, user_id: int, credits: int):
-    return service.substruct_user_credits(db, user_id, credits)
-
-def run_model(db: Session, user_id: int, model_id: int):
-    pass
+def update_credits(db: Session, user_id: int, credits: int):
+    return service.update_credits(db, user_id, credits)

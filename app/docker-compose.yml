@@ -48,16 +48,32 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   celery-worker:
     build:
       context: .
       dockerfile: Dockerfile-worker
+    env_file:
+      - .env
     depends_on:
       - redis
     environment:
       - REDIS_URL=redis://redis:6379/0  # Update this based on your Redis configuration
     # command: celery -A celery_instance.celery worker --loglevel=info
+    networks:
+      - app-network
+
+  bot:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile-bot
+    env_file:
+      - .env
+    networks:
+      - app-network
 
 networks:
   app-network:

@@ -6,7 +6,7 @@ from datetime import datetime
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     username = Column(String, index=True)
     credits = Column(Integer, index=True, default=999)
     
@@ -24,9 +24,10 @@ class Model(Base):
     
 class Action(Base):
     __tablename__ = "actions"
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
     model_id = Column(Integer, ForeignKey("models.id"), primary_key=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
+    data = Column(String, index=False)
     
     user = relationship("User", back_populates="interactions")
     model = relationship("Model", back_populates="interactions")
@@ -35,3 +36,7 @@ class Action(Base):
     #     PrimaryKeyConstraint('user_id', 'model_id', name='actions_pk'),
     # )
 
+class UserModel(Base):
+    __tablename__ = "user_models"
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    model_id = Column(Integer, ForeignKey("models.id"), primary_key=True)
