@@ -1,0 +1,15 @@
+dash==2.14.2
+fastapi==0.109.0
+SQLAlchemy==2.0.23
+pydantic==2.4.2
+python-jose==3.3.0
+uvicorn==0.25.0
+starlette==0.35.1
+pydantic-settings==2.1.0
+dash-bootstrap-components==1.5.0
+orjson==3.9.12
+passlib==1.7.4
+lightgbm==4.3.0
+scikit-learn==1.4.1.post1
+python-multipart==0.0.6
+bcrypt==4.1.2

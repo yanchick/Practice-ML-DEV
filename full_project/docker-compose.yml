@@ -1,0 +1,20 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - dash
+
+  dash:
+    build: .
+    ports:
+      - "8050:8050"
+    command: python -m service.api.gui
+    volumes:
+      - .:/usr/src/app
